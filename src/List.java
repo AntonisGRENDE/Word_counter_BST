@@ -158,25 +158,36 @@ public class List<T>{
     }
 
     public String toString() {
-        if (isEmpty()) return "List is empty :(";
+        if (isEmpty()) return "The List is empty :(";
 
-//        if (this.getHead().getData().getClass().getName().equals("WordFreq")) {
-//            List<WordFreq>.Node<WordFreq> temp = (List<WordFreq>.Node<WordFreq>) this.getHead();
-//        }
+        else if (this.getHead().getData() instanceof WordFreq) {
+            List<?>.Node<?> temp = this.getHead();
+            StringBuilder str = new StringBuilder();
 
-        Node<T> current = head;
-        StringBuilder ret = new StringBuilder();
-
-        while (current != null) {
-            ret.append(current.data.toString());
-
-            if (current.getNext() != null)
-                ret.append("\n");
-
-            current = current.next;
+            while (temp != null) {
+                Object data = temp.getData();
+                String word = ((WordFreq) data).getWord();
+                if (!BST.getStopWords().contains(word)) {
+                    str.append(data).append("\n");
+                }
+                temp = temp.getNext();
+            }
+            return (str + "\nΤhe total number of different words used is: " + BST.getWordFreqList().getSize());
         }
+        else {
+            Node<T> current = head;
+            StringBuilder ret = new StringBuilder();
 
-        return ret.toString();
+            while (current != null) {
+                ret.append(current.data.toString());
+
+                if (current.getNext() != null)
+                    ret.append("\n");
+
+                current = current.next;
+            }
+            return ret.toString();
+        }
     }
 
 }

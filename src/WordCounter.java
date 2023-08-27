@@ -13,5 +13,5 @@ public interface WordCounter {
     void addStopWord(String... w);
     void removeStopWord(String w);
     void printTreeAlphabetically(PrintStream stream);
-    void printTreeByFrequency();
+    void printTreeByFrequency(PrintStream stream);
 }

@@ -86,10 +86,10 @@ public class BST implements WordCounter {
         BST a = new BST();
         a.addStopWord("να", "και", "τι", "μου", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
                         "η", "ο", "στο", "θα", "απ", "πως", "στην", "της", "σε", "αλλα", "ότι", "από", "οι", "των", "τη", "τις", "of", "στον");
-        a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text1.txt");
+        a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text2.txt");
 
         traverseR5(head);
-        a.printTreeByFrequency();
+        a.printTreeByFrequency(System.out);
     }
 
     @Override
@@ -99,21 +99,9 @@ public class BST implements WordCounter {
     }
 
     @Override
-    public void printTreeByFrequency() {
+    public void printTreeByFrequency(PrintStream stream) {
         wordFreqList.sort(new WordFreq());
-        StringBuilder str = new StringBuilder();
-
-        System.out.print(wordFreqList.toString());
-
-        List<WordFreq>.Node<WordFreq> temp = wordFreqList.getHead();
-        while (temp != null) {
-            String word = temp.getData().getWord();
-            if (!stopWords.contains(word)) {
-                str.append(temp.getData().toString()).append("\n");
-            }
-            temp = temp.getNext();
-        }
-        System.out.println(str + "\nΤhe total number of different words used is: " + wordFreqList.getSize());
+        stream.println(wordFreqList.toString());
     }
 
     static void traverseR5(TreeNode n) {
@@ -454,5 +442,12 @@ public class BST implements WordCounter {
             System.out.println(n.getWordFreqObj().key() + " ");
         preorder(n.getRight());
         preorder(n.getLeft());
+    }
+
+    public static List<String> getStopWords() {
+        return stopWords;
+    }
+    public static List<WordFreq> getWordFreqList() {
+        return wordFreqList;
     }
 }
