@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Scanner;
 
 public class BST implements WordCounter {
     public static class TreeNode {
@@ -17,6 +18,9 @@ public class BST implements WordCounter {
             this.wordFreqObj = new WordFreq(item);
         }
 
+        public int compareDInsensitive(TreeNode b) {
+            return Integer.compare(this.getWordFreqObj().compareTo(b.getWordFreqObj()), 0);
+        }
 
         public WordFreq getWordFreqObj() {
             return wordFreqObj;
@@ -63,17 +67,7 @@ public class BST implements WordCounter {
             this.subtreeSize = subtreeSize;
         }
 
-        /**
-         * @return 0 means same value, 1 means bigger, 2 means same object, -1 means smaller
-         */
-        public int compareTo(TreeNode b) {
-            if (this.getWordFreqObj().key().compareToIgnoreCase(b.getWordFreqObj().key()) == 0)
-                return 0;
-            else if (this.getWordFreqObj().key().compareToIgnoreCase(b.getWordFreqObj().key()) >= 0)
-                return 1;
-            else
-                return -1;
-        }
+        /** @return 0 means same value, 1 means bigger, 2 means same object, -1 means smaller */
         public String toString() {
             return wordFreqObj.toString();
         }
@@ -81,15 +75,116 @@ public class BST implements WordCounter {
     private static TreeNode head;
     private static List<String> stopWords;
     private static List<WordFreq> wordFreqList;
+    private static List<String> cognateWords;
+    private static List<String> verbPostfix; // TODO ti domi na xrisimopoihso?
+
 
     public static void main(String[] args) {
         BST a = new BST();
         a.addStopWord("να", "και", "τι", "μου", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
                         "η", "ο", "στο", "θα", "απ", "πως", "στην", "της", "σε", "αλλα", "ότι", "από", "οι", "των", "τη", "τις", "of", "στον");
+
+        verbPostfix = new List<>();
+        verbPostfix.bulkInsert(  "μαστε", "σαστε", "ουμε", "ειτε", "ουν", "ετε", "ουν", "άζω", "αζω", "εις", "είς", "τος", "αι", "εί", "ει", "ος", "ας", "ες", "s", "ς", "ν", "ο", "ω", "ώ", "α", "η");
+
         a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text2.txt");
 
         traverseR5(head);
-        a.printTreeByFrequency(System.out);
+        a.printTreeAlphabetically(System.out);
+        System.out.println(cognateWords.toString());
+        //a.printTreeByFrequency(System.out);
+    }
+
+
+
+    @Override
+    public void load(String filename) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Do you want to count words ending with a different postfix but same root as different words? Answer with yes or no");
+        boolean sameOrigin = scanner.nextLine().equals("yes"); //todo
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line, la[];
+            while ((line = br.readLine()) != null) {
+                line = line.replaceAll("[^α-ωά-ώΑ-ΩΆ-Ώa-zA-Z\\s']", "").replace("\t", " ").toLowerCase();
+                // line = Normalizer.normalize(line, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT); not working //todo remove
+                la = line.split(" ");
+                for (String s : la)
+                    if (!((s.isBlank() || (s.startsWith("'") ||s.endsWith("'")) && (stopWords == null || !stopWords.contains(s)))))
+                        insert(s,sameOrigin);
+            }
+        }
+        catch (IOException ex) {System.out.println("file name is: " + filename); ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void insert(String string, boolean origin) {
+
+        if (head == null) {
+            head = new TreeNode(string);
+            cognateWords = new List<>();
+            return ;
+        }
+
+        TreeNode nodeIter = head, newItem = new TreeNode(string);
+
+        boolean cognateExists = false;      //omorizo
+        List<String>.ListNode<String> PostfixNode = verbPostfix.getHead();
+        String postfix = "", cognate = "";
+        boolean is_compound_word = false;   //sintheti leksi
+
+        while(PostfixNode != null) {
+            postfix = PostfixNode.getData();
+
+            is_compound_word =  (string.length() - postfix.length()) >=1;
+            if (is_compound_word) {
+                cognate = string.substring(0, string.length() - postfix.length()+ 1);
+                if (string.endsWith(postfix)) {
+                    if (cognateWords.contains(cognate))
+                        cognateExists = true;
+                    break;
+                }
+            }
+
+            PostfixNode = PostfixNode.getNext();
+        }
+
+        while (true) {
+                if (nodeIter.compareDInsensitive(newItem) == 0 || (!origin && cognateExists)) {
+                    nodeIter.getWordFreqObj().increaseFrequency();
+                return ;
+            }
+            else {
+                if (nodeIter.compareDInsensitive(newItem) < 0) {
+                    if (nodeIter.getRight() == null) {
+                        nodeIter.setRight(newItem);
+                        newItem.setParent(nodeIter);
+                        newItem.subtreeIncrease();
+                        if (is_compound_word && cognateExists)
+                            insertCognate(cognate);
+                        return;
+                    } else {
+                        nodeIter = nodeIter.getRight();
+                    }
+                } else {
+                    if (nodeIter.getLeft() == null) {
+                        nodeIter.setLeft(newItem);
+                        newItem.setParent(nodeIter);
+                        newItem.subtreeIncrease();
+                        if (is_compound_word && cognateExists)
+                            insertCognate(cognate);
+                        return;
+                    } else {
+                        nodeIter = nodeIter.getLeft();
+                    }
+                }
+            }
+        }
+    }
+
+    public void insertCognate(String s) {
+        if (s.length() >= 2)
+            cognateWords.insertAtBack(s);
     }
 
     @Override
@@ -118,50 +213,10 @@ public class BST implements WordCounter {
     public void addStopWord(String... words){
         if (stopWords == null)
             stopWords = new List<>();
-        for (String word:words){
+        for (String word : words){
             stopWords.insertAtBack(word);
         }
     }
-
-    @Override
-    public void insert(String item) {
-
-        if (head == null) {
-            head = new TreeNode(item);
-            return ;
-        }
-
-        TreeNode current = head, temp = new TreeNode(item);
-
-        while (true) {
-                if (current.compareTo(temp) == 0) {
-                    current.getWordFreqObj().setFrequency(current.getWordFreqObj().getFrequency() + 1);
-                return ;
-            }
-            else {
-                if (current.compareTo(temp) < 0) {
-                    if (current.getRight() == null) {
-                        current.setRight(temp);
-                        temp.setParent(current);
-                        temp.subtreeIncrease();
-                        return;
-                    } else {
-                        current = current.getRight();
-                    }
-                } else {
-                    if (current.getLeft() == null) {
-                        current.setLeft(temp);
-                        temp.setParent(current);
-                        temp.subtreeIncrease();
-                        return;
-                    } else {
-                        current = current.getLeft();
-                    }
-                }
-            }
-        }
-    }
-
 
     @Override
     public WordFreq search(String item) {
@@ -169,7 +224,7 @@ public class BST implements WordCounter {
 
         while (true) {
             if (current == null) return null;
-            else if (current.compareTo(temp) == 0){
+            else if (current.compareDInsensitive(temp) == 0){
 
                 if (current.getWordFreqObj().getFrequency() > getMeanFrequency()) {
                     remove(current.getWordFreqObj().key());
@@ -177,7 +232,7 @@ public class BST implements WordCounter {
                 }
                 return current.getWordFreqObj();
             }
-            else if (current.compareTo(temp) < 0)
+            else if (current.compareDInsensitive(temp) < 0)
                 current = current.getRight();
             else
                 current = current.getLeft();
@@ -295,12 +350,12 @@ public class BST implements WordCounter {
             if (current == null)
                 return;
 
-            if (current.compareTo(deleteItem) == 0)
+            if (current.compareDInsensitive(deleteItem) == 0)
                 break;
 
             parent = current;
 
-            if (current.compareTo(deleteItem) < 0)
+            if (current.compareDInsensitive(deleteItem) < 0)
                 current = current.getRight();
             else
                 current = current.getLeft();
@@ -342,24 +397,6 @@ public class BST implements WordCounter {
         }
     }
 
-
-
-    @Override
-    public void load(String filename) {
-            try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-                String line, la[];
-                while ((line = br.readLine()) != null) {
-                    line = line.replaceAll("[^α-ωά-ώΑ-ΩΆ-Ώa-zA-Z\\s']", "").replace("\t", " ").toLowerCase();
-                    la = line.split(" ");
-                    for (String s : la)
-                        if (!((s.isBlank() || (s.startsWith("'") ||s.endsWith("'")) &&
-                                (stopWords == null || !stopWords.contains(s)))))  // if stopwords variable hasn't been initialized an exception is thrown
-                                    insert(s);
-                }
-            }
-            catch (IOException ex) {System.out.println("file name is: " + filename); ex.printStackTrace();
-            }
-    }
 
     @Override
     public int getTotalWords() {
@@ -429,7 +466,6 @@ public class BST implements WordCounter {
         if (stopWords.remove(w) == -1)
             System.out.println("Stopword does not exist");
     }
-
 
     public void printPreorder(){
         preorder(head);

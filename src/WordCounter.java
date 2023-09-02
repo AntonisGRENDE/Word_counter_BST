@@ -1,7 +1,7 @@
 import java.io.PrintStream;
 
 public interface WordCounter {
-    void insert(String w);
+    void insert(String w, boolean sameRoot);
     WordFreq search(String w);
     void remove(String w);
     void load(String filename);

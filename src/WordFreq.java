@@ -1,4 +1,6 @@
+import java.text.Normalizer;
 import java.util.Comparator;
+import java.util.regex.Pattern;
 
 public class WordFreq implements Comparator<WordFreq>{
     public String getWord() {
@@ -20,6 +22,21 @@ public class WordFreq implements Comparator<WordFreq>{
     }
 
     public String key () {return word;}
+
+    /** compares characters of a string ignoring diacritics and case */
+    public int compareTo(WordFreq wf){
+        String tempWord = removeDiacritics(wf.word), tempWord2 = removeDiacritics(this.word);
+        return tempWord.compareToIgnoreCase(tempWord2);
+    }
+
+    public static String removeDiacritics(String input){
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("");
+    }
+
+    public void increaseFrequency(){ ++frequency; }
+
     public int getFrequency() {return frequency;}
     public void setFrequency(int frequency) {
         this.frequency = frequency;

@@ -1,11 +1,11 @@
 import java.util.*;
 
 public class List<T>{
-    public class Node<T>{
+    public class ListNode<T>{
         protected T data;
-        protected Node<T> next;
+        protected ListNode<T> next;
 
-        Node(T data) {
+        ListNode(T data) {
             this.data = data;
             next = null;
         }
@@ -14,19 +14,24 @@ public class List<T>{
             return data;
         }
 
-        public Node<T> getNext() {
+        public ListNode<T> getNext() {
             return next;
         }
 
-        public void setNext(Node<T> next) {
+        public void setNext(ListNode<T> next) {
             this.next = next;
         }
 
+        @Override
+        public String toString() {
+            return "ListNode{" +
+                    "data=" + data +
+                    '}';
+        }
     }
 
-
-    private Node<T> head = null;
-    private Node<T> tail = null;
+    private ListNode<T> head = null;
+    private ListNode<T> tail = null;
     int size = 0;
 
 
@@ -38,11 +43,14 @@ public class List<T>{
     }
 
     public boolean contains(T ob) {
-        Node <T> current = head;
+        ListNode<T> current = head;
 
         while (current != null) {
             if (ob.equals(current.getData()))
                 return true;
+            else if (ob instanceof String && current.getData() instanceof String && ((String) current.getData()).contains((CharSequence) ob)){
+                return true;
+            }
             current = current.getNext();
         }
         return false;
@@ -55,8 +63,8 @@ public class List<T>{
     public int remove(T data) throws EmptyStackException {
         if (isEmpty()) throw new EmptyStackException();
 
-        Node<T> iterator = head;
-        Node<T> prev = null;
+        ListNode<T> iterator = head;
+        ListNode<T> prev = null;
 
         while (iterator != null) {
             if (data.equals(iterator.getData())) {
@@ -78,8 +86,19 @@ public class List<T>{
         return -1;
     }
 
+    public List<T> bulkInsert(T...objects){
+        for (T o : objects) {
+            if (head == null) {
+                insertAtFront(o);
+            } else {
+                insertAtBack(o);
+            }
+        }
+        return this;
+    }
+
     public void insertAtFront(T data) {
-        Node<T> n = new Node<>(data);
+        ListNode<T> n = new ListNode<>(data);
 
         if (isEmpty()) {
             head = tail = n;
@@ -91,7 +110,7 @@ public class List<T>{
     }
 
     public void insertAtBack(T data) {
-        Node<T> n = new Node<>(data);
+        ListNode<T> n = new ListNode<>(data);
 
         if (isEmpty()) {
             head = tail = n;
@@ -107,12 +126,12 @@ public class List<T>{
         if (head == null || head == tail)
             return;
 
-        Node<T> newHead = null;
-        Node<T> newTail = null;
+        ListNode<T> newHead = null;
+        ListNode<T> newTail = null;
 
         while (head != null) {
             // get next item
-            Node<T> swap = head;
+            ListNode<T> swap = head;
 
             head = head.getNext();
 
@@ -121,8 +140,8 @@ public class List<T>{
                 newHead = newTail = swap;
                 swap.setNext(null);
             } else {
-                Node<T> prev = null;
-                Node<T> iterator = newHead;
+                ListNode<T> prev = null;
+                ListNode<T> iterator = newHead;
 
                 // iterate newList until we get to a point where our data is smaller or reach the end
                 while (iterator != null && comparator.compare(iterator.getData(), swap.getData()) >= 0) {
@@ -149,7 +168,7 @@ public class List<T>{
     }
 
 
-    public Node<T> getHead() {
+    public ListNode<T> getHead() {
         return head;
     }
 
@@ -161,13 +180,13 @@ public class List<T>{
         if (isEmpty()) return "The List is empty :(";
 
         else if (this.getHead().getData() instanceof WordFreq) {
-            List<?>.Node<?> temp = this.getHead();
+            List<?>.ListNode<?> temp = this.getHead();
             StringBuilder str = new StringBuilder();
 
             while (temp != null) {
                 Object data = temp.getData();
                 String word = ((WordFreq) data).getWord();
-                if (!BST.getStopWords().contains(word)) {
+                if (BST.getStopWords() != null && !BST.getStopWords().contains(word)) {
                     str.append(data).append("\n");
                 }
                 temp = temp.getNext();
@@ -175,7 +194,7 @@ public class List<T>{
             return (str + "\nΤhe total number of different words used is: " + BST.getWordFreqList().getSize());
         }
         else {
-            Node<T> current = head;
+            ListNode<T> current = head;
             StringBuilder ret = new StringBuilder();
 
             while (current != null) {
