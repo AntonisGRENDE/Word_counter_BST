@@ -48,7 +48,7 @@ public class List<T>{
         while (current != null) {
             if (ob.equals(current.getData()))
                 return true;
-            else if (ob instanceof String && current.getData() instanceof String && ((String) current.getData()).contains((CharSequence) ob)){
+            else if (ob instanceof String && current.getData() instanceof String && current.getData().equals(ob)){
                 return true;
             }
             current = current.getNext();
@@ -192,6 +192,16 @@ public class List<T>{
                 temp = temp.getNext();
             }
             return (str + "\nΤhe total number of different words used is: " + BST.getWordFreqList().getSize());
+        }
+        else if (this.getHead().getData() instanceof String){
+            List<?>.ListNode<?> temp = this.getHead();
+            StringBuilder str = new StringBuilder();
+
+            while (temp != null) {
+                str.append(temp.getData()).append(" ");
+                temp = temp.getNext();
+            }
+            return "words in the list: " + str ;
         }
         else {
             ListNode<T> current = head;

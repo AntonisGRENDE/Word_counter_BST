@@ -85,7 +85,10 @@ public class BST implements WordCounter {
                         "η", "ο", "στο", "θα", "απ", "πως", "στην", "της", "σε", "αλλα", "ότι", "από", "οι", "των", "τη", "τις", "of", "στον");
 
         verbPostfix = new List<>();
-        verbPostfix.bulkInsert(  "μαστε", "σαστε", "ουμε", "ειτε", "ουν", "ετε", "ουν", "άζω", "αζω", "εις", "είς", "τος", "αι", "εί", "ει", "ος", "ας", "ες", "s", "ς", "ν", "ο", "ω", "ώ", "α", "η");
+        verbPostfix.bulkInsert( "ότητα", "μαστε", "σαστε", "ξουμε", "ξετε", "ξουν", "σισεις", "σισουν", "σουμε", "σαμε", "ιζουμε", "ιζετε", "σετε", "ουμε",
+                                "ειτε", "ουν", "ετε", "ουν", "ους", "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "πηγαινουν",
+                                "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξω", "ξει", "ξεις", "κι", "σα", "σες", "σε", "ια", "ην", "αν",
+                                "s", "ς", "ν", "ο", "ω", "ώ", "α", "ά", "ή", "η", "ε", "ο", "ό");
 
         a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text2.txt");
 
@@ -136,47 +139,42 @@ public class BST implements WordCounter {
         while(PostfixNode != null) {
             postfix = PostfixNode.getData();
 
-            is_compound_word =  (string.length() - postfix.length()) >=1;
-            if (is_compound_word) {
-                cognate = string.substring(0, string.length() - postfix.length()+ 1);
-                if (string.endsWith(postfix)) {
-                    if (cognateWords.contains(cognate))
-                        cognateExists = true;
-                    break;
-                }
+            is_compound_word = (string.length() - postfix.length()) >= 1;
+            if (is_compound_word && string.endsWith(postfix)) {
+                cognate = string.substring(0, string.length() - postfix.length());
+                if (cognateWords.contains(cognate))
+                    cognateExists = true;   //the cognate exist so we need to increase the frequency
+                break;                      //if the cognate has been found but does not exist it must be added to the list
             }
 
             PostfixNode = PostfixNode.getNext();
         }
 
         while (true) {
-                if (nodeIter.compareDInsensitive(newItem) == 0 || (!origin && cognateExists)) {
-                    nodeIter.getWordFreqObj().increaseFrequency();
+            if (nodeIter.compareDInsensitive(newItem) == 0 || (!origin && cognateExists &&
+                    nodeIter.getWordFreqObj().getWord().startsWith(cognate) && string.length() >= nodeIter.getWordFreqObj().getWord().length() - postfix.length()) ) {
+                nodeIter.getWordFreqObj().increaseFrequency();
+                if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove
+                    System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
                 return ;
-            }
-            else {
-                if (nodeIter.compareDInsensitive(newItem) < 0) {
-                    if (nodeIter.getRight() == null) {
+            } else {
+                TreeNode childNode = (nodeIter.compareDInsensitive(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
+
+                if (childNode == null) {
+                    if (nodeIter.compareDInsensitive(newItem) < 0) {
                         nodeIter.setRight(newItem);
-                        newItem.setParent(nodeIter);
-                        newItem.subtreeIncrease();
-                        if (is_compound_word && cognateExists)
-                            insertCognate(cognate);
-                        return;
                     } else {
-                        nodeIter = nodeIter.getRight();
-                    }
-                } else {
-                    if (nodeIter.getLeft() == null) {
                         nodeIter.setLeft(newItem);
-                        newItem.setParent(nodeIter);
-                        newItem.subtreeIncrease();
-                        if (is_compound_word && cognateExists)
-                            insertCognate(cognate);
-                        return;
-                    } else {
-                        nodeIter = nodeIter.getLeft();
                     }
+                    newItem.setParent(nodeIter);
+                    newItem.subtreeIncrease();
+
+                    if (!cognateExists) {
+                        insertCognate(cognate);
+                    }
+                    return;
+                } else {
+                    nodeIter = childNode;
                 }
             }
         }
