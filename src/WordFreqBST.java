@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-public class BST implements WordCounter {
-    public static class TreeNode {
+public class WordFreqBST implements WordCounter {
+    public static class WordFreqTreeNode {
 
         WordFreq wordFreqObj;
-        TreeNode left, right, parent;
+        WordFreqTreeNode left, right, parent;
         int subtreeSize;
 
-        TreeNode(WordFreq t) {
+        WordFreqTreeNode(WordFreq t) {
             wordFreqObj = new WordFreq(t);
         }
-        TreeNode(String item) {
+        WordFreqTreeNode(String item) {
             this.wordFreqObj = new WordFreq(item);
         }
 
-        public int compareDInsensitive(TreeNode b) {
+        public int compareDInsensitive(WordFreqTreeNode b) {
             return Integer.compare(this.getWordFreqObj().compareTo(b.getWordFreqObj()), 0);
         }
 
@@ -26,22 +26,22 @@ public class BST implements WordCounter {
             return wordFreqObj;
         }
 
-        public TreeNode getLeft() {
+        public WordFreqTreeNode getLeft() {
             return left;
         }
 
-        public TreeNode getRight() {
+        public WordFreqTreeNode getRight() {
             return right;
         }
 
-        public TreeNode getParent() {return parent;}
+        public WordFreqTreeNode getParent() {return parent;}
 
         public int getSubtreeSize() {
             return subtreeSize;
         }
 
         public void subtreeIncrease() {
-            TreeNode current = this;
+            WordFreqTreeNode current = this;
             while (current.parent != null) {
                 current = current.parent;
                 current.subtreeSize += 1;
@@ -51,15 +51,15 @@ public class BST implements WordCounter {
             this.wordFreqObj = item;
         }
 
-        public void setLeft(TreeNode left) {
+        public void setLeft(WordFreqTreeNode left) {
             this.left = left;
         }
 
-        public void setRight(TreeNode right) {
+        public void setRight(WordFreqTreeNode right) {
             this.right = right;
         }
 
-        public void setParent(TreeNode parent) {
+        public void setParent(WordFreqTreeNode parent) {
             this.parent = parent;
         }
 
@@ -72,7 +72,7 @@ public class BST implements WordCounter {
             return wordFreqObj.toString();
         }
     }
-    private static TreeNode head;
+    private static WordFreqTreeNode head;
     private static List<String> stopWords;
     private static List<WordFreq> wordFreqList;
     private static List<String> cognateWords;
@@ -80,7 +80,7 @@ public class BST implements WordCounter {
 
 
     public static void main(String[] args) {
-        BST a = new BST();
+        WordFreqBST a = new WordFreqBST();
         a.addStopWord("να", "και", "τι", "μου", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
                         "η", "ο", "στο", "θα", "απ", "πως", "στην", "της", "σε", "αλλα", "ότι", "από", "οι", "των", "τη", "τις", "of", "στον");
 
@@ -88,13 +88,16 @@ public class BST implements WordCounter {
         verbPostfix.bulkInsert( "ότητα", "μαστε", "σαστε", "ξουμε", "ξετε", "ξουν", "σισεις", "σισουν", "σουμε", "σαμε", "ιζουμε", "ιζετε", "σετε", "ουμε",
                                 "ειτε", "ουν", "ετε", "ουν", "ους", "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "πηγαινουν",
                                 "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξω", "ξει", "ξεις", "κι", "σα", "σες", "σε", "ια", "ην", "αν",
+        verbPostfix.bulkInsert( "ότητα", "μαστε", "σαστε", "ξουμε", "ξετε", "ξουν", "σισεις", "σισουν", "σουμε", "σαμε", "ιζουμε", "ιζετε", "σετε", "ουμε", "ειτε", "ουν", "ετε", "ουν", "ους",
+                                "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "νω", "νεις", "νει", "νουμε", "νουν", "εινει", "αει", "εσε", "στω", "ανε", "ησε",
+                                "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξα", "ξω", "ξει", "ξεις", "κι", "σα", "σες", "σε", "ια", "ην", "αν", "αω", "αεις", "αει", "αμε", "ατε",
                                 "s", "ς", "ν", "ο", "ω", "ώ", "α", "ά", "ή", "η", "ε", "ο", "ό");
 
         a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text2.txt");
 
         traverseR5(head);
         a.printTreeAlphabetically(System.out);
-        System.out.println(cognateWords.toString());
+        //System.out.println(cognateWords.toString());
         //a.printTreeByFrequency(System.out);
     }
 
@@ -104,19 +107,18 @@ public class BST implements WordCounter {
     public void load(String filename) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to count words ending with a different postfix but same root as different words? Answer with yes or no");
-        boolean sameOrigin = scanner.nextLine().equals("yes"); //todo
+        boolean sameOrigin = false;//scanner.nextLine().equals("yes"); //todo
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line, la[];
             while ((line = br.readLine()) != null) {
                 line = line.replaceAll("[^α-ωά-ώΑ-ΩΆ-Ώa-zA-Z\\s']", "").replace("\t", " ").toLowerCase();
-                // line = Normalizer.normalize(line, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT); not working //todo remove
                 la = line.split(" ");
                 for (String s : la)
-                    if (!((s.isBlank() || (s.startsWith("'") ||s.endsWith("'")) && (stopWords == null || !stopWords.contains(s)))))
+                    if (!(s.isBlank() || (s.startsWith("'") || s.endsWith("'"))) && !stopWords.contains(s)) //todo
                         insert(s,sameOrigin);
             }
-        }
-        catch (IOException ex) {System.out.println("file name is: " + filename); ex.printStackTrace();
+        } catch (IOException ex) {
+            System.out.println("file name is: " + filename); ex.printStackTrace();
         }
     }
 
@@ -124,41 +126,39 @@ public class BST implements WordCounter {
     public void insert(String string, boolean origin) {
 
         if (head == null) {
-            head = new TreeNode(string);
+            head = new WordFreqTreeNode(string);
             cognateWords = new List<>();
             return ;
         }
 
-        TreeNode nodeIter = head, newItem = new TreeNode(string);
+        WordFreqTreeNode nodeIter = head, newItem = new WordFreqTreeNode(string);
 
         boolean cognateExists = false;      //omorizo
         List<String>.ListNode<String> PostfixNode = verbPostfix.getHead();
+        List<String>.ListNode<String> verbPostfixNode = verbPostfix.getHead();
         String postfix = "", cognate = "";
-        boolean is_compound_word = false;   //sintheti leksi
 
-        while(PostfixNode != null) {
-            postfix = PostfixNode.getData();
+        while (verbPostfixNode != null) {
+            postfix = verbPostfixNode.getData();
 
-            is_compound_word = (string.length() - postfix.length()) >= 1;
-            if (is_compound_word && string.endsWith(postfix)) {
+            if (string.endsWith(postfix) && (string.length() - postfix.length()) >= 1) { // is compound word sintheti leksi
                 cognate = string.substring(0, string.length() - postfix.length());
                 if (cognateWords.contains(cognate))
                     cognateExists = true;   //the cognate exist so we need to increase the frequency
                 break;                      //if the cognate has been found but does not exist it must be added to the list
             }
-
-            PostfixNode = PostfixNode.getNext();
+            verbPostfixNode = verbPostfixNode.getNext();
         }
 
         while (true) {
-            if (nodeIter.compareDInsensitive(newItem) == 0 || (!origin && cognateExists &&
-                    nodeIter.getWordFreqObj().getWord().startsWith(cognate) && string.length() >= nodeIter.getWordFreqObj().getWord().length() - postfix.length()) ) {
+            if (nodeIter.compareDInsensitive(newItem) == 0 || (!origin && cognateExists && nodeIter.getWordFreqObj().getWord().startsWith(cognate)
+                    && nodeIter.getWordFreqObj().getWord().length() <= cognate.length() + postfix.length())) {
                 nodeIter.getWordFreqObj().increaseFrequency();
-                if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove
-                    System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
+                // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove
+                    //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
                 return ;
             } else {
-                TreeNode childNode = (nodeIter.compareDInsensitive(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
+                WordFreqTreeNode childNode = (nodeIter.compareDInsensitive(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
 
                 if (childNode == null) {
                     if (nodeIter.compareDInsensitive(newItem) < 0) {
@@ -197,7 +197,7 @@ public class BST implements WordCounter {
         stream.println(wordFreqList.toString());
     }
 
-    static void traverseR5(TreeNode n) {
+    static void traverseR5(WordFreqTreeNode n) {
         if (n == null)
             return ;
         if (wordFreqList == null) {
@@ -218,7 +218,7 @@ public class BST implements WordCounter {
 
     @Override
     public WordFreq search(String item) {
-        TreeNode current = head, temp = new TreeNode(item);
+        WordFreqTreeNode current = head, temp = new WordFreqTreeNode(item);
 
         while (true) {
             if (current == null) return null;
@@ -239,32 +239,32 @@ public class BST implements WordCounter {
     public void rootInsert(WordFreq element){
         head = rootInsert(head, element, null);
     }
-    private TreeNode rootInsert(TreeNode head, WordFreq element, TreeNode parent) {
+    private WordFreqTreeNode rootInsert(WordFreqTreeNode head, WordFreq element, WordFreqTreeNode parent) {
 
         if (head == null) {
-            //the BST specified by root is empty (it has 0 elements) -
-            //initialize node with element and insert it at the BST
+            //the WordFrequencyBST specified by root is empty (it has 0 elements) -
+            //initialize node with element and insert it at the WordFrequencyBST
             //(do not make any rotations)
-            TreeNode node = new TreeNode(element);
+            WordFreqTreeNode node = new WordFreqTreeNode(element);
             node.setParent(parent);
             node.subtreeIncrease();
             return node;
         }
 
-        //BST not empty
+        //WordFrequencyBST not empty
         //find subtree where we're going to insert element
         int result = element.key().compareToIgnoreCase(head.getWordFreqObj().key());
 
         if (result == 0) {
             //element equal to root
-            //do not insert element in the BST
+            //do not insert element in the WordFrequencyBST
             return head;
         }
 
         if (result < 0) {
             //element smaller than root
             //(1) insert element at the left subtree of root (recursively)
-            TreeNode leftSubtreeRoot = this.rootInsert(head.getLeft(), element, head);
+            WordFreqTreeNode leftSubtreeRoot = this.rootInsert(head.getLeft(), element, head);
             //(2) update root's left subtree
             head.setLeft(leftSubtreeRoot);
             //(3) perform a rotation at the opposite (right)
@@ -274,20 +274,20 @@ public class BST implements WordCounter {
         else {
             //element bigger than root
             //(1) insert element at the right subtree of root (recursively)
-            TreeNode rightSubtreeRoot = this.rootInsert(head.getRight(), element, head);
+            WordFreqTreeNode rightSubtreeRoot = this.rootInsert(head.getRight(), element, head);
             //(2) update root's right subtree
             head.setRight(rightSubtreeRoot);
             //(3) perform a rotation at the opposite (left)
             head = this.rotateLeft(head);
         }
 
-        //after each rotation, return the updated BST
+        //after each rotation, return the updated WordFrequencyBST
         return head;
     }
 
-    public TreeNode rotateLeft(TreeNode pivot) {
-        TreeNode parent = pivot.getParent();
-        TreeNode child = pivot.getRight();
+    public WordFreqTreeNode rotateLeft(WordFreqTreeNode pivot) {
+        WordFreqTreeNode parent = pivot.getParent();
+        WordFreqTreeNode child = pivot.getRight();
 
         //update pivot's parent's child with pivot's right child
         if (parent == null) head = child;
@@ -301,7 +301,7 @@ public class BST implements WordCounter {
         //update pivot's parent with child
         pivot.setParent(child);
         //during update, child has 3 children (1 right, 1 initial left + 1 left (pivot))
-        //BST spec violation
+        //WordFrequencyBST spec violation
         //pivot takes child's initial left child as its right child
         pivot.setRight(child.getLeft());
         //if child's left child exists, update it with its new parent (pivot)
@@ -310,14 +310,14 @@ public class BST implements WordCounter {
         }
         //update child's new left child (pivot)
         child.setLeft(pivot);
-        //return the new BST root after rotation
+        //return the new WordFrequencyBST root after rotation
         return child;
     }
 
-    private TreeNode rotateRight(TreeNode pivot) {
+    private WordFreqTreeNode rotateRight(WordFreqTreeNode pivot) {
 
-        TreeNode parent = pivot.getParent();
-        TreeNode child = pivot.getLeft();
+        WordFreqTreeNode parent = pivot.getParent();
+        WordFreqTreeNode child = pivot.getLeft();
 
         if (parent == null) {
             head = child;
@@ -342,7 +342,7 @@ public class BST implements WordCounter {
     @Override
     public void remove(String w) {
         // find node to delete and its parent
-        TreeNode current = head, parent = null, deleteItem = new TreeNode(w);
+        WordFreqTreeNode current = head, parent = null, deleteItem = new WordFreqTreeNode(w);
 
         while (true) {
             if (current == null)
@@ -359,14 +359,14 @@ public class BST implements WordCounter {
                 current = current.getLeft();
         }
 
-        TreeNode replace;
+        WordFreqTreeNode replace;
 
         if (current.getLeft() == null)
             replace = current.getRight();
         else if (current.getRight() == null)
             replace = current.getLeft();
         else {
-            TreeNode findCurrent = current.getRight();
+            WordFreqTreeNode findCurrent = current.getRight();
 
             while (true) {
                 if (findCurrent.getLeft() != null)
@@ -401,7 +401,7 @@ public class BST implements WordCounter {
         return traverseR(head);
     }
 
-    private int traverseR(TreeNode h) {
+    private int traverseR(WordFreqTreeNode h) {
         if (h == null || stopWords.contains(h.getWordFreqObj().key()))
             return 0;
         return h.getWordFreqObj().getFrequency()
@@ -421,8 +421,7 @@ public class BST implements WordCounter {
         return traverseR2(head);
     }
 
-
-    public int traverseR2(TreeNode h) {
+    public int traverseR2(WordFreqTreeNode h) {
         if (h == null)
             return 0;  // not found
         else if (h.getWordFreqObj().key().equals(searching))
@@ -436,7 +435,7 @@ public class BST implements WordCounter {
         return search(TraverseR3(head));
     }
     int max = -1;
-    String TraverseR3(TreeNode h) {
+    String TraverseR3(WordFreqTreeNode h) {
         if (h == null)
             return null;
         else if (h.getWordFreqObj().getFrequency() > max)
@@ -450,7 +449,7 @@ public class BST implements WordCounter {
     }
 
     double sum = 0.0;
-    double TraverseR4(TreeNode h) {
+    double TraverseR4(WordFreqTreeNode h) {
         if (h == null)
             return 0.0;
         sum += h.getWordFreqObj().getFrequency();
@@ -469,7 +468,7 @@ public class BST implements WordCounter {
         preorder(head);
         System.out.println();
     }
-    public void preorder(TreeNode n) {
+    public void preorder(WordFreqTreeNode n) {
         if (n == null)
             return ;
         if(!stopWords.contains(n.getWordFreqObj().key()))

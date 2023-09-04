@@ -42,7 +42,23 @@ public class List<T>{
         return head == null;
     }
 
-    public boolean contains(T ob) {
+    public boolean contains(T ob) { //todo
+        ListNode<T> current = head;
+
+        while (current != null) {
+            if (ob.equals(current.getData()))
+                return true;
+            else if (ob instanceof String && current.getData() instanceof String &&
+                    current.getData().equals(ob)){ //intended for cognate words
+                return true;
+            }
+            current = current.getNext();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object ob) {
         ListNode<T> current = head;
 
         while (current != null) {
@@ -177,7 +193,8 @@ public class List<T>{
     }
 
     public String toString() {
-        if (isEmpty()) return "The List is empty :(";
+        if (isEmpty())
+            return "The List is empty :(";
 
         else if (this.getHead().getData() instanceof WordFreq) {
             List<?>.ListNode<?> temp = this.getHead();
@@ -186,22 +203,22 @@ public class List<T>{
             while (temp != null) {
                 Object data = temp.getData();
                 String word = ((WordFreq) data).getWord();
-                if (BST.getStopWords() != null && !BST.getStopWords().contains(word)) {
+                if (WordFreqBST.getStopWords() != null && !WordFreqBST.getStopWords().contains(word)) {
                     str.append(data).append("\n");
                 }
                 temp = temp.getNext();
             }
-            return (str + "\nΤhe total number of different words used is: " + BST.getWordFreqList().getSize());
+            return (str + "\nΤhe total number of different words used is: " + WordFreqBST.getWordFreqList().getSize());
         }
         else if (this.getHead().getData() instanceof String){
             List<?>.ListNode<?> temp = this.getHead();
             StringBuilder str = new StringBuilder();
 
             while (temp != null) {
-                str.append(temp.getData()).append(" ");
+                str.append(temp.getData()).append(", ");
                 temp = temp.getNext();
             }
-            return "words in the list: " + str ;
+            return "nodes: " + str  ;
         }
         else {
             ListNode<T> current = head;
