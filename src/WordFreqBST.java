@@ -27,7 +27,7 @@ public class WordFreqBST implements WordCounter {
         public boolean containsRecursive(WordFreqTreeNode current, Object ob){
             if (current == null)
                 return false;
-            else if (ob instanceof WordFreq && current.wordFreqObj.compareTo((WordFreq) ob) == 0) { //intended for root words
+            else if (ob instanceof WordFreq && current.wordFreqObj.compareToIgnoreCaseWithoutDiacritics((WordFreq) ob) == 0) { //intended for root words
                 return true;
             }
             boolean leftContains = containsRecursive(current.left, ob);
@@ -87,9 +87,9 @@ public class WordFreqBST implements WordCounter {
         }
         @Override
         public int compare(WordFreq o1, WordFreq o2) {
-            return o1.compareTo(o2);
+            return o1.compareToIgnoreCaseWithoutDiacritics(o2);
         }
-        public int compareTo(WordFreqTreeNode node){ return this.getWordFreqObj().compareTo(node.getWordFreqObj()); }
+        public int compareTo(WordFreqTreeNode node){ return this.getWordFreqObj().compareToIgnoreCaseWithoutDiacritics(node.getWordFreqObj()); }
     }
     private static WordFreqTreeNode head;
     private static List<String> stopWords;

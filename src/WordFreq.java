@@ -3,7 +3,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public class WordFreq implements Comparator<WordFreq>{
     private int frequency;
@@ -54,15 +53,12 @@ public class WordFreq implements Comparator<WordFreq>{
     public String key () {return word;}
 
     /** compares characters of a string ignoring diacritics and case */
-    public int compareTo(WordFreq wf){
-        String tempWord = removeDiacritics(wf.word), tempWord2 = removeDiacritics(this.word);
-        return tempWord.compareToIgnoreCase(tempWord2);
-    }
-
-    public static String removeDiacritics(String input){
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        return pattern.matcher(normalized).replaceAll("");
+    public int compareToIgnoreCaseWithoutDiacritics(WordFreq wf) {
+        String normalizedWord1 = Normalizer.normalize(this.word, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        String normalizedWord2 = Normalizer.normalize(wf.word, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return normalizedWord1.compareToIgnoreCase(normalizedWord2);
     }
 
     @Override
