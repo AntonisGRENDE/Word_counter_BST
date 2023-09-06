@@ -2,15 +2,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class WordFreqBST implements WordCounter {
-    public static class WordFreqTreeNode {
-
+    public static class WordFreqTreeNode implements Comparator<WordFreq> {
         WordFreq wordFreqObj;
         WordFreqTreeNode left, right, parent;
         int subtreeSize;
-
         WordFreqTreeNode(WordFreq t) {
             wordFreqObj = new WordFreq(t);
         }
@@ -18,8 +17,25 @@ public class WordFreqBST implements WordCounter {
             this.wordFreqObj = new WordFreq(item);
         }
 
-        public int compareDInsensitive(WordFreqTreeNode b) {
-            return Integer.compare(this.getWordFreqObj().compareTo(b.getWordFreqObj()), 0);
+        public boolean contains (Object ob) {
+            WordFreqTreeNode currentTreeNode = this;
+            while (this.parent != null) //find parent node
+                currentTreeNode = currentTreeNode.parent;
+            return containsRecursive(currentTreeNode, ob);
+        }
+
+        public boolean containsRecursive(WordFreqTreeNode current, Object ob){
+            if (current == null)
+                return false;
+            if (ob instanceof WordFreq && current.wordFreqObj.compareTo((WordFreq) ob) == 0){ //intended for cognate words
+                return true;
+            } else if (ob instanceof String && current.wordFreqObj.compareTo((String) ob) == 0) {
+                return true;
+            }
+            boolean leftContains = containsRecursive(current.left, ob);
+            boolean rightContains = containsRecursive(current.right, ob);
+
+            return leftContains || rightContains;
         }
 
         public WordFreq getWordFreqObj() {
@@ -71,36 +87,28 @@ public class WordFreqBST implements WordCounter {
         public String toString() {
             return wordFreqObj.toString();
         }
+        @Override
+        public int compare(WordFreq o1, WordFreq o2) {
+            return o1.compareTo(o2);
+        }
+        public int compareTo(Object ob){ return this.getWordFreqObj().compareTo(ob); }
     }
     private static WordFreqTreeNode head;
     private static List<String> stopWords;
     private static List<WordFreq> wordFreqList;
-    private static List<String> cognateWords;
-    private static List<String> verbPostfix; // TODO ti domi na xrisimopoihso?
 
 
     public static void main(String[] args) {
         WordFreqBST a = new WordFreqBST();
         a.addStopWord("να", "και", "τι", "μου", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
                         "η", "ο", "στο", "θα", "απ", "πως", "στην", "της", "σε", "αλλα", "ότι", "από", "οι", "των", "τη", "τις", "of", "στον");
-
-        verbPostfix = new List<>();
-        verbPostfix.bulkInsert( "ότητα", "μαστε", "σαστε", "ξουμε", "ξετε", "ξουν", "σισεις", "σισουν", "σουμε", "σαμε", "ιζουμε", "ιζετε", "σετε", "ουμε",
-                                "ειτε", "ουν", "ετε", "ουν", "ους", "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "πηγαινουν",
-                                "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξω", "ξει", "ξεις", "κι", "σα", "σες", "σε", "ια", "ην", "αν",
-        verbPostfix.bulkInsert( "ότητα", "μαστε", "σαστε", "ξουμε", "ξετε", "ξουν", "σισεις", "σισουν", "σουμε", "σαμε", "ιζουμε", "ιζετε", "σετε", "ουμε", "ειτε", "ουν", "ετε", "ουν", "ους",
-                                "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "νω", "νεις", "νει", "νουμε", "νουν", "εινει", "αει", "εσε", "στω", "ανε", "ησε",
-                                "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξα", "ξω", "ξει", "ξεις", "κι", "σα", "σες", "σε", "ια", "ην", "αν", "αω", "αεις", "αει", "αμε", "ατε",
-                                "s", "ς", "ν", "ο", "ω", "ώ", "α", "ά", "ή", "η", "ε", "ο", "ό");
-
-        a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text2.txt");
+        a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text1.txt");
 
         traverseR5(head);
         a.printTreeAlphabetically(System.out);
         //System.out.println(cognateWords.toString());
         //a.printTreeByFrequency(System.out);
     }
-
 
 
     @Override
@@ -114,7 +122,7 @@ public class WordFreqBST implements WordCounter {
                 line = line.replaceAll("[^α-ωά-ώΑ-ΩΆ-Ώa-zA-Z\\s']", "").replace("\t", " ").toLowerCase();
                 la = line.split(" ");
                 for (String s : la)
-                    if (!(s.isBlank() || (s.startsWith("'") || s.endsWith("'"))) && !stopWords.contains(s)) //todo
+                    if (!(s.isBlank() || (s.startsWith("'") || s.endsWith("'"))) && !stopWords.contains(s))
                         insert(s,sameOrigin);
             }
         } catch (IOException ex) {
@@ -127,41 +135,23 @@ public class WordFreqBST implements WordCounter {
 
         if (head == null) {
             head = new WordFreqTreeNode(string);
-            cognateWords = new List<>();
             return ;
         }
 
-        WordFreqTreeNode nodeIter = head, newItem = new WordFreqTreeNode(string);
-
-        boolean cognateExists = false;      //omorizo
-        List<String>.ListNode<String> PostfixNode = verbPostfix.getHead();
-        List<String>.ListNode<String> verbPostfixNode = verbPostfix.getHead();
-        String postfix = "", cognate = "";
-
-        while (verbPostfixNode != null) {
-            postfix = verbPostfixNode.getData();
-
-            if (string.endsWith(postfix) && (string.length() - postfix.length()) >= 1) { // is compound word sintheti leksi
-                cognate = string.substring(0, string.length() - postfix.length());
-                if (cognateWords.contains(cognate))
-                    cognateExists = true;   //the cognate exist so we need to increase the frequency
-                break;                      //if the cognate has been found but does not exist it must be added to the list
-            }
-            verbPostfixNode = verbPostfixNode.getNext();
-        }
-
+        WordFreqTreeNode nodeIter = head;
+        WordFreqTreeNode newItem = new WordFreqTreeNode(string);
         while (true) {
-            if (nodeIter.compareDInsensitive(newItem) == 0 || (!origin && cognateExists && nodeIter.getWordFreqObj().getWord().startsWith(cognate)
-                    && nodeIter.getWordFreqObj().getWord().length() <= cognate.length() + postfix.length())) {
+            if (nodeIter.compareTo(string) == 0 || (!origin && WordFreq.rootExists(newItem.getWordFreqObj()) && nodeIter.getWordFreqObj().getWord().startsWith(newItem.getWordFreqObj().getRoot())
+                    && nodeIter.getWordFreqObj().getWord().length() <= newItem.getWordFreqObj().getRoot().length() + newItem.wordFreqObj.getPostfix().length())) {
                 nodeIter.getWordFreqObj().increaseFrequency();
                 // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove
                     //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
                 return ;
             } else {
-                WordFreqTreeNode childNode = (nodeIter.compareDInsensitive(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
 
+                WordFreqTreeNode childNode = (nodeIter.compareTo(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
                 if (childNode == null) {
-                    if (nodeIter.compareDInsensitive(newItem) < 0) {
+                    if (nodeIter.compareTo(newItem) < 0) {
                         nodeIter.setRight(newItem);
                     } else {
                         nodeIter.setLeft(newItem);
@@ -169,20 +159,12 @@ public class WordFreqBST implements WordCounter {
                     newItem.setParent(nodeIter);
                     newItem.subtreeIncrease();
 
-                    if (!cognateExists) {
-                        insertCognate(cognate);
-                    }
                     return;
                 } else {
                     nodeIter = childNode;
                 }
             }
         }
-    }
-
-    public void insertCognate(String s) {
-        if (s.length() >= 2)
-            cognateWords.insertAtBack(s);
     }
 
     @Override
@@ -222,7 +204,7 @@ public class WordFreqBST implements WordCounter {
 
         while (true) {
             if (current == null) return null;
-            else if (current.compareDInsensitive(temp) == 0){
+            else if (current.compareTo(temp) == 0){
 
                 if (current.getWordFreqObj().getFrequency() > getMeanFrequency()) {
                     remove(current.getWordFreqObj().key());
@@ -230,7 +212,7 @@ public class WordFreqBST implements WordCounter {
                 }
                 return current.getWordFreqObj();
             }
-            else if (current.compareDInsensitive(temp) < 0)
+            else if (current.compareTo(temp) < 0)
                 current = current.getRight();
             else
                 current = current.getLeft();
@@ -348,12 +330,12 @@ public class WordFreqBST implements WordCounter {
             if (current == null)
                 return;
 
-            if (current.compareDInsensitive(deleteItem) == 0)
+            if (current.compareTo(deleteItem) == 0)
                 break;
 
             parent = current;
 
-            if (current.compareDInsensitive(deleteItem) < 0)
+            if (current.compareTo(deleteItem) < 0)
                 current = current.getRight();
             else
                 current = current.getLeft();
