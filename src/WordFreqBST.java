@@ -17,7 +17,7 @@ public class WordFreqBST implements WordCounter {
             this.wordFreqObj = new WordFreq(item);
         }
 
-        public boolean contains (Object ob) {
+        public boolean contains(Object ob) {
             WordFreqTreeNode currentTreeNode = this;
             while (this.parent != null) //find parent node
                 currentTreeNode = currentTreeNode.parent;
@@ -92,8 +92,8 @@ public class WordFreqBST implements WordCounter {
         public int compareTo(WordFreqTreeNode node){ return this.getWordFreqObj().compareToIgnoreCaseWithoutDiacritics(node.getWordFreqObj()); }
     }
     private static WordFreqTreeNode head;
-    private static List<String> stopWords;
-    private static List<WordFreq> wordFreqList;
+    private static MyLinkedList<String> stopWords;
+    private static MyLinkedList<WordFreq> wordFreqMyLinkedList;
 
 
     public static void main(String[] args) {
@@ -104,7 +104,7 @@ public class WordFreqBST implements WordCounter {
 
         traverseR5(head);
         a.printTreeAlphabetically(System.out);
-        //System.out.println(cognateWords.toString());
+        //System.out.println(WordFreq.rootWords.toString());
         //a.printTreeByFrequency(System.out);
     }
 
@@ -113,7 +113,7 @@ public class WordFreqBST implements WordCounter {
     public void load(String filename) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to count words ending with a different postfix but same root as different words? Answer with yes or no");
-        boolean sameOrigin = false;//scanner.nextLine().equals("yes"); //todo
+        boolean sameOrigin = scanner.nextLine().equals("yes");
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line, la[];
             while ((line = br.readLine()) != null) {
@@ -146,7 +146,6 @@ public class WordFreqBST implements WordCounter {
                     //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
                 return ;
             } else {
-
                 WordFreqTreeNode childNode = (nodeIter.compareTo(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
                 if (childNode == null) {
                     if (nodeIter.compareTo(newItem) < 0) {
@@ -156,7 +155,6 @@ public class WordFreqBST implements WordCounter {
                     }
                     newItem.setParent(nodeIter);
                     newItem.subtreeIncrease();
-
                     return;
                 } else {
                     nodeIter = childNode;
@@ -167,30 +165,30 @@ public class WordFreqBST implements WordCounter {
 
     @Override
     public void printTreeAlphabetically(PrintStream stream) {
-        wordFreqList.sort(new Alphabetically());
-        stream.println(wordFreqList.toString());
+        wordFreqMyLinkedList.sort(new Alphabetically());
+        stream.println(wordFreqMyLinkedList.toString());
     }
 
     @Override
     public void printTreeByFrequency(PrintStream stream) {
-        wordFreqList.sort(new WordFreq());
-        stream.println(wordFreqList.toString());
+        wordFreqMyLinkedList.sort(new WordFreq());
+        stream.println(wordFreqMyLinkedList.toString());
     }
 
     static void traverseR5(WordFreqTreeNode n) {
         if (n == null)
             return ;
-        if (wordFreqList == null) {
-            wordFreqList = new List<>();
+        if (wordFreqMyLinkedList == null) {
+            wordFreqMyLinkedList = new MyLinkedList<>();
         }
-        wordFreqList.insertAtFront(n.getWordFreqObj());
+        wordFreqMyLinkedList.insertAtFront(n.getWordFreqObj());
         traverseR5(n.getRight());
         traverseR5(n.getLeft());
     }
 
     public void addStopWord(String... words){
         if (stopWords == null)
-            stopWords = new List<>();
+            stopWords = new MyLinkedList<>();
         for (String word : words){
             stopWords.insertAtBack(word);
         }
@@ -457,10 +455,10 @@ public class WordFreqBST implements WordCounter {
         preorder(n.getLeft());
     }
 
-    public static List<String> getStopWords() {
+    public static MyLinkedList<String> getStopWords() {
         return stopWords;
     }
-    public static List<WordFreq> getWordFreqList() {
-        return wordFreqList;
+    public static MyLinkedList<WordFreq> getWordFreqList() {
+        return wordFreqMyLinkedList;
     }
 }

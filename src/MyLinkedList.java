@@ -1,6 +1,7 @@
+import java.text.Normalizer;
 import java.util.*;
 
-public class List<T>{
+public class MyLinkedList<T>{
     public class ListNode<T>{
         protected T data;
         protected ListNode<T> next;
@@ -35,8 +36,7 @@ public class List<T>{
     int size = 0;
 
 
-    public List() {
-    }
+    public MyLinkedList() {}
 
     public boolean isEmpty() {
         return head == null;
@@ -46,15 +46,21 @@ public class List<T>{
         ListNode<T> current = head;
 
         while (current != null) {
-            if (ob.equals(current.getData()))
-                return true;
-            else if (ob instanceof String && current.getData() instanceof String &&
-                    current.getData().equals(ob)){ //intended for cognate words
+            if (ob.equals(current.getData()) || ob instanceof String && current.getData() instanceof String &&
+                    compareToIgnoreCaseWithoutDiacritics((String) current.getData(), (String) ob) == 0){ //intended for cognate words
                 return true;
             }
             current = current.getNext();
         }
         return false;
+    }
+
+    public static int compareToIgnoreCaseWithoutDiacritics(String str, String str2) {
+        String normalizedWord1 = Normalizer.normalize(str, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        String normalizedWord2 = Normalizer.normalize(str2, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return normalizedWord1.compareToIgnoreCase(normalizedWord2);
     }
 
     @Override
@@ -77,7 +83,6 @@ public class List<T>{
      * @throws EmptyStackException if the list is empty
      */
     public int remove(T data) throws EmptyStackException {
-        if (isEmpty()) throw new EmptyStackException();
 
         ListNode<T> iterator = head;
         ListNode<T> prev = null;
@@ -102,7 +107,7 @@ public class List<T>{
         return -1;
     }
 
-    public List<T> bulkInsert(T...objects){
+    public MyLinkedList<T> bulkInsert(T...objects){
         for (T o : objects) {
             if (head == null) {
                 insertAtFront(o);
@@ -178,7 +183,6 @@ public class List<T>{
                     newTail = swap;
             }
         }
-
         head = newHead;
         tail = newTail;
     }
@@ -197,7 +201,7 @@ public class List<T>{
             return "The List is empty :(";
 
         else if (this.getHead().getData() instanceof WordFreq) {
-            List<?>.ListNode<?> temp = this.getHead();
+            MyLinkedList<?>.ListNode<?> temp = this.getHead();
             StringBuilder str = new StringBuilder();
 
             while (temp != null) {
@@ -209,9 +213,8 @@ public class List<T>{
                 temp = temp.getNext();
             }
             return (str + "\nΤhe total number of different words used is: " + WordFreqBST.getWordFreqList().getSize());
-        }
-        else if (this.getHead().getData() instanceof String){
-            List<?>.ListNode<?> temp = this.getHead();
+        } else if (this.getHead().getData() instanceof String){
+            MyLinkedList<?>.ListNode<?> temp = this.getHead();
             StringBuilder str = new StringBuilder();
 
             while (temp != null) {

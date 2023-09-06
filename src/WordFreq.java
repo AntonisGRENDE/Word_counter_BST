@@ -11,7 +11,7 @@ public class WordFreq implements Comparator<WordFreq>{
                                 "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "νω", "νεις", "νει", "νουμε", "νουν", "εινει", "αει", "εσε", "στω", "ανε", "ησε",
                                 "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξα", "ξω", "ξει", "ξεις", "σα", "σες", "σε", "ια", "ην", "αν", "αω", "αεις", "αει", "αμε", "ατε"));
     private static Set <String> nounPostfix = new HashSet<>(Arrays.asList("ότητα", "οτα", "στης", "τι", "κι", "κη", "κης", "ης", "τα", "s", "ω", "ώ", "ά", "ή", "η", "ε", "ό", "ς", "ν", "ο", "α" ));
-    public static Set<String> rootWords = new HashSet<String>();
+    public static MyLinkedList<String> rootWords = new MyLinkedList<>();
 
 
     public WordFreq(){}
@@ -19,7 +19,6 @@ public class WordFreq implements Comparator<WordFreq>{
     public WordFreq(String word) {
         this.word = word;
         frequency = 1;
-        //rootExists(word);
     }
     public WordFreq(WordFreq t) {
         this.word = t.word;
@@ -31,10 +30,11 @@ public class WordFreq implements Comparator<WordFreq>{
     }
 
     private static boolean checkPostfixes(WordFreq wordFreqInstance, Set<String> postfix) {
-        String stringRoot = "";
-        String word = wordFreqInstance.word;
+        String stringRoot = "", normalizedPostfix;
+        String word = Normalizer.normalize(wordFreqInstance.word , Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         for (String p : postfix){
-            if (word.endsWith(p) && (word.length() - p.length()) >= 1) { // second condition: is compound word sintheti leksi
+            normalizedPostfix = Normalizer.normalize(wordFreqInstance.word , Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+            if (word.endsWith(normalizedPostfix) && (word.length() - p.length()) >= 1) { // second condition: is compound word sintheti leksi
                 stringRoot = word.substring(0, word.length() - p.length());
                 if (stringRoot.length() >= 2) {
                     wordFreqInstance.root = stringRoot;
@@ -42,7 +42,7 @@ public class WordFreq implements Comparator<WordFreq>{
                     if (rootWords.contains(stringRoot)) {
                         return true;                        //the root exist so we need to increase the frequency
                     } else {
-                        rootWords.add(stringRoot);   //if the stringRoot has been found but does not exist it must be added to the list
+                        rootWords.insertAtBack(stringRoot);   //if the stringRoot has been found but does not exist it must be added to the list
                         return false;
                     }
                 }
@@ -50,7 +50,7 @@ public class WordFreq implements Comparator<WordFreq>{
         }
         return false;
     }
-    public String key () {return word;}
+    public String key() {return word;}
 
     /** compares characters of a string ignoring diacritics and case */
     public int compareToIgnoreCaseWithoutDiacritics(WordFreq wf) {
@@ -61,6 +61,7 @@ public class WordFreq implements Comparator<WordFreq>{
         return normalizedWord1.compareToIgnoreCase(normalizedWord2);
     }
 
+    /** Compares frequency */
     @Override
     public int compare(WordFreq o1, WordFreq o2) {
         return Integer.compare(o1.frequency, o2.frequency);
