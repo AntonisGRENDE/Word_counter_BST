@@ -27,9 +27,7 @@ public class WordFreqBST implements WordCounter {
         public boolean containsRecursive(WordFreqTreeNode current, Object ob){
             if (current == null)
                 return false;
-            if (ob instanceof WordFreq && current.wordFreqObj.compareTo((WordFreq) ob) == 0){ //intended for cognate words
-                return true;
-            } else if (ob instanceof String && current.wordFreqObj.compareTo((String) ob) == 0) {
+            else if (ob instanceof WordFreq && current.wordFreqObj.compareTo((WordFreq) ob) == 0) { //intended for root words
                 return true;
             }
             boolean leftContains = containsRecursive(current.left, ob);
@@ -91,7 +89,7 @@ public class WordFreqBST implements WordCounter {
         public int compare(WordFreq o1, WordFreq o2) {
             return o1.compareTo(o2);
         }
-        public int compareTo(Object ob){ return this.getWordFreqObj().compareTo(ob); }
+        public int compareTo(WordFreqTreeNode node){ return this.getWordFreqObj().compareTo(node.getWordFreqObj()); }
     }
     private static WordFreqTreeNode head;
     private static List<String> stopWords;
@@ -141,7 +139,7 @@ public class WordFreqBST implements WordCounter {
         WordFreqTreeNode nodeIter = head;
         WordFreqTreeNode newItem = new WordFreqTreeNode(string);
         while (true) {
-            if (nodeIter.compareTo(string) == 0 || (!origin && WordFreq.rootExists(newItem.getWordFreqObj()) && nodeIter.getWordFreqObj().getWord().startsWith(newItem.getWordFreqObj().getRoot())
+            if (nodeIter.compareTo(newItem) == 0 || (!origin && WordFreq.rootExists(newItem.getWordFreqObj()) && nodeIter.getWordFreqObj().getWord().startsWith(newItem.getWordFreqObj().getRoot())
                     && nodeIter.getWordFreqObj().getWord().length() <= newItem.getWordFreqObj().getRoot().length() + newItem.wordFreqObj.getPostfix().length())) {
                 nodeIter.getWordFreqObj().increaseFrequency();
                 // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove

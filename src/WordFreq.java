@@ -54,13 +54,8 @@ public class WordFreq implements Comparator<WordFreq>{
     public String key () {return word;}
 
     /** compares characters of a string ignoring diacritics and case */
-    public int compareTo(Object ob){
-        String string = "";
-        if (ob instanceof WordFreq)
-            string = ((WordFreq) ob).word;
-        else if (ob instanceof String)
-            string = ((String) ob);
-        String tempWord = removeDiacritics(string), tempWord2 = removeDiacritics(this.word);
+    public int compareTo(WordFreq wf){
+        String tempWord = removeDiacritics(wf.word), tempWord2 = removeDiacritics(this.word);
         return tempWord.compareToIgnoreCase(tempWord2);
     }
 
