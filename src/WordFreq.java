@@ -19,30 +19,33 @@ public class WordFreq implements Comparator<WordFreq>{
     public WordFreq(String word) {
         this.word = word;
         frequency = 1;
+        rootExists(this);
     }
     public WordFreq(WordFreq t) {
         this.word = t.word;
         this.frequency = t.frequency;
     }
 
-    public static boolean rootExists(WordFreq wf) {
+    public static boolean rootExists(WordFreq wf) { //todo does not only check.
         return checkPostfixes(wf, verbPostfix) || checkPostfixes(wf, nounPostfix);
     }
 
     private static boolean checkPostfixes(WordFreq wordFreqInstance, Set<String> postfix) {
-        String stringRoot = "", normalizedPostfix;
-        String word = Normalizer.normalize(wordFreqInstance.word , Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        String stringRoot = "";
+        String word = Normalizer.normalize(wordFreqInstance.word , Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", ""); //removes diacritics
         for (String p : postfix){
-            normalizedPostfix = Normalizer.normalize(wordFreqInstance.word , Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-            if (word.endsWith(normalizedPostfix) && (word.length() - p.length()) >= 1) { // second condition: is compound word sintheti leksi
+            if (word.endsWith(p) && (word.length() - p.length()) >= 1) { // second condition: is compound word sintheti leksi
                 stringRoot = word.substring(0, word.length() - p.length());
                 if (stringRoot.length() >= 2) {
                     wordFreqInstance.root = stringRoot;
                     wordFreqInstance.postfix = p;
-                    if (rootWords.contains(stringRoot)) {
+                    if (rootWords.containsIgnoreCase(stringRoot)) {
                         return true;                        //the root exist so we need to increase the frequency
                     } else {
-                        rootWords.insertAtBack(stringRoot);   //if the stringRoot has been found but does not exist it must be added to the list
+                        if (rootWords.isEmpty())
+                            rootWords.insertAtFront(stringRoot);
+                        else
+                            rootWords.insertAtBack(stringRoot);   //if the stringRoot has been found but does not exist it must be added to the list
                         return false;
                     }
                 }

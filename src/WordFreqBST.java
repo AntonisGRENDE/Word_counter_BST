@@ -113,7 +113,7 @@ public class WordFreqBST implements WordCounter {
     public void load(String filename) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to count words ending with a different postfix but same root as different words? Answer with yes or no");
-        boolean sameOrigin = scanner.nextLine().equals("yes");
+        boolean sameOrigin = false; //scanner.nextLine().equals("yes"); //todo fix no response
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line, la[];
             while ((line = br.readLine()) != null) {
@@ -133,6 +133,7 @@ public class WordFreqBST implements WordCounter {
 
         if (head == null) {
             head = new WordFreqTreeNode(string);
+            WordFreq.rootExists(head.getWordFreqObj());
             return ;
         }
 

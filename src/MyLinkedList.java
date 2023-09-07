@@ -55,12 +55,22 @@ public class MyLinkedList<T>{
         return false;
     }
 
+    public boolean containsIgnoreCase(String str) {
+        ListNode<String> current;
+        if (head != null && head.getData() instanceof String) {
+            current = (ListNode<String>) head;
+            while (current !=null) {
+                if (current.getData().equals(str))
+                    return true;
+                current = current.getNext();
+            }
+        }
+        return false;
+    }
     public static int compareToIgnoreCaseWithoutDiacritics(String str, String str2) {
-        String normalizedWord1 = Normalizer.normalize(str, Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         String normalizedWord2 = Normalizer.normalize(str2, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        return normalizedWord1.compareToIgnoreCase(normalizedWord2);
+        return str.compareToIgnoreCase(normalizedWord2);
     }
 
     @Override
