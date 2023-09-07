@@ -55,11 +55,10 @@ public class MyLinkedList<T>{
         return false;
     }
 
-    public boolean containsIgnoreCase(String str) {
-        ListNode<String> current;
+    public boolean containsString(String str) {
         if (head != null && head.getData() instanceof String) {
-            current = (ListNode<String>) head;
-            while (current !=null) {
+            ListNode<String> current = (ListNode<String>) head;
+            while (current != null) {
                 if (current.getData().equals(str))
                     return true;
                 current = current.getNext();
@@ -131,7 +130,9 @@ public class MyLinkedList<T>{
     public void insertAtFront(T data) {
         ListNode<T> n = new ListNode<>(data);
 
-        if (isEmpty()) {
+        if (data == null)
+            throw new RuntimeException();
+        else if (isEmpty()) {
             head = tail = n;
         } else {
             n.setNext(head);
@@ -143,7 +144,9 @@ public class MyLinkedList<T>{
     public void insertAtBack(T data) {
         ListNode<T> n = new ListNode<>(data);
 
-        if (isEmpty()) {
+        if (data == null)
+            throw new RuntimeException();
+        else if (isEmpty()) {
             head = tail = n;
         } else {
             tail.setNext(n);

@@ -133,15 +133,16 @@ public class WordFreqBST implements WordCounter {
 
         if (head == null) {
             head = new WordFreqTreeNode(string);
-            WordFreq.rootExists(head.getWordFreqObj());
+            WordFreq.findRootAndPostfix(head.getWordFreqObj());
             return ;
         }
 
         WordFreqTreeNode nodeIter = head;
         WordFreqTreeNode newItem = new WordFreqTreeNode(string);
+        String rootNewItem = newItem.getWordFreqObj().getRoot();
         while (true) {
-            if (nodeIter.compareTo(newItem) == 0 || (!origin && WordFreq.rootExists(newItem.getWordFreqObj()) && nodeIter.getWordFreqObj().getWord().startsWith(newItem.getWordFreqObj().getRoot())
-                    && nodeIter.getWordFreqObj().getWord().length() <= newItem.getWordFreqObj().getRoot().length() + newItem.wordFreqObj.getPostfix().length())) {
+            if (nodeIter.compareTo(newItem) == 0 || (!origin && WordFreq.rootWords.containsString(rootNewItem) && nodeIter.getWordFreqObj().getWord().startsWith(rootNewItem) //the root exist so we need to increase the frequency
+                    && nodeIter.getWordFreqObj().getWord().length() <= rootNewItem.length() + newItem.wordFreqObj.getPostfix().length())) {
                 nodeIter.getWordFreqObj().increaseFrequency();
                 // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove
                     //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
@@ -156,6 +157,8 @@ public class WordFreqBST implements WordCounter {
                     }
                     newItem.setParent(nodeIter);
                     newItem.subtreeIncrease();
+                    if (rootNewItem != null && !WordFreq.rootWords.containsString(rootNewItem))
+                        WordFreq.rootWords.insertAtBack(rootNewItem);   //if the stringRoot has been found but does not exist it must be added to the list
                     return;
                 } else {
                     nodeIter = childNode;

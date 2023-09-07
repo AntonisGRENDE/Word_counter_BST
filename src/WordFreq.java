@@ -19,40 +19,42 @@ public class WordFreq implements Comparator<WordFreq>{
     public WordFreq(String word) {
         this.word = word;
         frequency = 1;
-        rootExists(this);
+        findRootAndPostfix(this);
     }
-    public WordFreq(WordFreq t) {
-        this.word = t.word;
-        this.frequency = t.frequency;
-    }
-
-    public static boolean rootExists(WordFreq wf) { //todo does not only check.
-        return checkPostfixes(wf, verbPostfix) || checkPostfixes(wf, nounPostfix);
+    public WordFreq(WordFreq wf) {
+        this.word = wf.word;
+        this.frequency = wf.frequency;
+        findRootAndPostfix(wf);
     }
 
-    private static boolean checkPostfixes(WordFreq wordFreqInstance, Set<String> postfix) {
-        String stringRoot = "";
-        String word = Normalizer.normalize(wordFreqInstance.word , Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", ""); //removes diacritics
-        for (String p : postfix){
-            if (word.endsWith(p) && (word.length() - p.length()) >= 1) { // second condition: is compound word sintheti leksi
-                stringRoot = word.substring(0, word.length() - p.length());
+    public static boolean findRootAndPostfix(WordFreq wf) {
+        String NormalizedWord = Normalizer.normalize(wf.word, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", ""); //removes diacritics
+
+        for (String p : verbPostfix) {
+            if (NormalizedWord.endsWith(p) && (NormalizedWord.length() - p.length()) >= 1) { // second condition: is compound word (sintheti leksi)
+                String stringRoot = NormalizedWord.substring(0, NormalizedWord.length() - p.length());
                 if (stringRoot.length() >= 2) {
-                    wordFreqInstance.root = stringRoot;
-                    wordFreqInstance.postfix = p;
-                    if (rootWords.containsIgnoreCase(stringRoot)) {
-                        return true;                        //the root exist so we need to increase the frequency
-                    } else {
-                        if (rootWords.isEmpty())
-                            rootWords.insertAtFront(stringRoot);
-                        else
-                            rootWords.insertAtBack(stringRoot);   //if the stringRoot has been found but does not exist it must be added to the list
-                        return false;
-                    }
+                    wf.root = stringRoot;
+                    wf.postfix = p;
+                    return true;
                 }
             }
         }
+
+        for (String p : nounPostfix) {
+            if (NormalizedWord.endsWith(p) && (NormalizedWord.length() - p.length()) >= 1) { // second condition: is compound word (sintheti leksi)
+                String stringRoot = NormalizedWord.substring(0, NormalizedWord.length() - p.length());
+                if (stringRoot.length() >= 2) {
+                    wf.root = stringRoot;
+                    wf.postfix = p;
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
+
     public String key() {return word;}
 
     /** compares characters of a string ignoring diacritics and case */
