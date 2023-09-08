@@ -1,7 +1,9 @@
 import java.text.Normalizer;
 import java.util.*;
+import java.util.function.Consumer;
 
-public class MyLinkedList<T>{
+public class MyLinkedList<T> implements Iterable<T>{
+
     public class ListNode<T>{
         protected T data;
         protected ListNode<T> next;
@@ -35,12 +37,19 @@ public class MyLinkedList<T>{
     private ListNode<T> tail = null;
     int size = 0;
 
-
     public MyLinkedList() {}
 
-    public boolean isEmpty() {
-        return head == null;
+    public MyLinkedList (T...objects){
+        for (T o : objects) {
+            if (head == null) {
+                insertAtFront(o);
+            } else {
+                insertAtBack(o);
+            }
+        }
     }
+
+    public boolean isEmpty() { return head == null; }
 
     public boolean contains(T ob) { //todo
         ListNode<T> current = head;
@@ -116,16 +125,6 @@ public class MyLinkedList<T>{
         return -1;
     }
 
-    public MyLinkedList<T> bulkInsert(T...objects){
-        for (T o : objects) {
-            if (head == null) {
-                insertAtFront(o);
-            } else {
-                insertAtBack(o);
-            }
-        }
-        return this;
-    }
 
     public void insertAtFront(T data) {
         ListNode<T> n = new ListNode<>(data);
@@ -249,6 +248,34 @@ public class MyLinkedList<T>{
                 current = current.next;
             }
             return ret.toString();
+        }
+    }
+
+    public Iterator<T> iterator() {
+        return new LinkedListIterator();
+    }
+
+    private class LinkedListIterator implements Iterator<T> {
+        private ListNode<T> current = head;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T data = current.getData();
+            current = current.getNext();
+            return data;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 

@@ -7,10 +7,13 @@ import java.util.Set;
 public class WordFreq implements Comparator<WordFreq>{
     private int frequency;
     private String word, root, postfix;
-    private static Set <String> verbPostfix = new HashSet<>(Arrays.asList("ομαι", "εσε", "ετε", "ωμαστε", "ωσαστε", "μαστε", "σαστε", "ξουμε", "ξετε", "ζεται", "ξουν", "σισεις", "σισουν", "σουμε", "σαμε", "ιζουμε", "ιζετε", "σετε", "ουμε", "ειτε", "ουν", "ετε", "ουν", "ους",
-                                "άζω", "αζω", "αζεις", "αζει", "εις", "είς", "ειται", "τος", "οτα", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "νω", "νεις", "νει", "νουμε", "νουν", "εινει", "αει", "εσε", "στω", "ανε", "ησε",
-                                "αι", "οι", "εί", "ει", "ος", "ας", "ες","ές", "ου", "ον", "κα", "ια", "νω", "κες", "κε", "καμε", "κια", "ξα", "ξω", "ξει", "ξεις", "σα", "σες", "σε", "ια", "ην", "αν", "αω", "αεις", "αει", "αμε", "ατε"));
-    private static Set <String> nounPostfix = new HashSet<>(Arrays.asList("ότητα", "οτα", "στης", "τι", "κι", "κη", "κης", "ης", "τα", "s", "ω", "ώ", "ά", "ή", "η", "ε", "ό", "ς", "ν", "ο", "α" ));
+    private static MyLinkedList <String> verbPostfix = new MyLinkedList<>("ομαι", "εσε", "ετε", "ωμαστε", "ωσαστε", "μαστε", "σαστε", "ξουμε", "ξετε", "ζεται", "ξουν", "ισεις", "σισουν", "σουμε",
+                                                                                    "σαμε", "σατε", "ιζουμε", "ιζετε", "σετε", "ουμε", "ειτε", "ουν", "ετε", "ουν", "ους", "άζω", "αζω", "αζεις", "αζει", "εις", "είς",
+                                                                                    "ειται", "μαι", "σαι", "ναι", "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "σουν", "νω", "νεις", "νει", "νουμε", "ουνε",
+                                                                                    "νουν", "εινει", "χτει", "ατων", "ησω", "ιζω", "αει", "εσε", "στω", "ανε", "ησα","ησε", "σαν", "ξα", "ξω", "ξει", "ξεις", "σω", "σεις", "σει", "ηκε",
+                                                                                    "σεο", "σα", "σες", "σε", "ια", "ην", "αν", "αω", "αεις", "αει", "αμε", "ατε", "με", "αι", "οι", "ει", "ας", "ες", "ές", "ου", "ον", "ζει",
+                                                                                    "ια", "σω", "νω" );
+    private static MyLinkedList <String> nounPostfix = new MyLinkedList<>("μενος", "μενοι", "μενη", "μενες", "οτητα", "οτα", "στης", "ουλα", "ατα", "ακι", "ακια", "τι", "ης", "ων", "ος","s", "ω", "η", "ε", "ς", "ν", "ο", "α" );
     public static MyLinkedList<String> rootWords = new MyLinkedList<>();
 
 
@@ -27,6 +30,8 @@ public class WordFreq implements Comparator<WordFreq>{
         findRootAndPostfix(wf);
     }
 
+    /** The word is normalized before compared so that we don't need to include diacritics in our Postfix Sets.
+     *  As a result all roots and postfixes are without diacritics */
     public static boolean findRootAndPostfix(WordFreq wf) {
         String NormalizedWord = Normalizer.normalize(wf.word, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", ""); //removes diacritics
 

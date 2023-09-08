@@ -144,7 +144,7 @@ public class WordFreqBST implements WordCounter {
             if (nodeIter.compareTo(newItem) == 0 || (!origin && WordFreq.rootWords.containsString(rootNewItem) && nodeIter.getWordFreqObj().getWord().startsWith(rootNewItem) //the root exist so we need to increase the frequency
                     && nodeIter.getWordFreqObj().getWord().length() <= rootNewItem.length() + newItem.wordFreqObj.getPostfix().length())) {
                 nodeIter.getWordFreqObj().increaseFrequency();
-                // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo remove
+                // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo next patch: check for wrong equivalents
                     //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
                 return ;
             } else {
