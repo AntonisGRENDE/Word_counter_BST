@@ -94,12 +94,12 @@ public class WordFreqBST implements WordCounter {
     private static WordFreqTreeNode head;
     private static MyLinkedList<String> stopWords;
     private static MyLinkedList<WordFreq> wordFreqMyLinkedList;
-
+    private static int totalWords = 0;
 
     public static void main(String[] args) {
         WordFreqBST a = new WordFreqBST();
-        a.addStopWord("να", "και", "τι", "μου", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
-                        "η", "ο", "στο", "θα", "απ", "πως", "στην", "της", "σε", "αλλα", "ότι", "από", "οι", "των", "τη", "τις", "of", "στον");
+        a.addStopWord("να", "και", "τι", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
+                        "η", "ο", "στο", "θα", "απ", "στην", "της", "σε", "αλλα", "από", "οι", "των", "τη", "τις", "of", "στον");
         a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text1.txt");
 
         traverseR5(head);
@@ -144,12 +144,14 @@ public class WordFreqBST implements WordCounter {
             if (nodeIter.compareTo(newItem) == 0 || (!origin && WordFreq.rootWords.containsString(rootNewItem) && nodeIter.getWordFreqObj().getWord().startsWith(rootNewItem) //the root exist so we need to increase the frequency
                     && nodeIter.getWordFreqObj().getWord().length() <= rootNewItem.length() + newItem.wordFreqObj.getPostfix().length())) {
                 nodeIter.getWordFreqObj().increaseFrequency();
+                ++totalWords;
                 // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo next patch: check for wrong equivalents
                     //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
                 return ;
             } else {
                 WordFreqTreeNode childNode = (nodeIter.compareTo(newItem) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
                 if (childNode == null) {
+                    ++totalWords;
                     if (nodeIter.compareTo(newItem) < 0) {
                         nodeIter.setRight(newItem);
                     } else {
@@ -381,7 +383,7 @@ public class WordFreqBST implements WordCounter {
     @Override
     public int getTotalWords() {
         return traverseR(head);
-    }
+    }   //todo change?
 
     private int traverseR(WordFreqTreeNode h) {
         if (h == null || stopWords.contains(h.getWordFreqObj().key()))
@@ -465,4 +467,5 @@ public class WordFreqBST implements WordCounter {
     public static MyLinkedList<WordFreq> getWordFreqList() {
         return wordFreqMyLinkedList;
     }
+    public static int getTotalWordsWritten() { return totalWords; }
 }
