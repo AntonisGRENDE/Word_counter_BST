@@ -1,7 +1,6 @@
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class MyLinkedList<T> implements Iterable<T>{
 
@@ -225,9 +224,9 @@ public class MyLinkedList<T> implements Iterable<T>{
                 }
                 temp = temp.getNext();
             }
-            return (str + "\nΤhe total number of different words written is: " + WordFreqBST.getWordFreqList().getSize() +
-                          "\nThe total number of words written is:           " + WordFreqBST.getTotalWordsWritten() +
-                          "\nYour word variety (words divided total words)   ") + new DecimalFormat("#.#").format(WordFreqBST.getWordFreqList().getSize() * 100.0f / WordFreqBST.getTotalWordsWritten())  +"%";
+            return (str + "\nΤhe total number of different words written is:           " + WordFreqBST.getWordFreqList().getSize() +
+                          "\nThe total number of words written is:                     " + WordFreqBST.getTotalWordsWritten() +
+                          "\nYour word variety (different words divided total words)   ") + new DecimalFormat("#.#").format(WordFreqBST.getWordFreqList().getSize() * 100.0f / WordFreqBST.getTotalWordsWritten())  +"%";
         } else if (this.getHead().getData() instanceof String){
             MyLinkedList<?>.ListNode<?> temp = this.getHead();
             StringBuilder str = new StringBuilder();
