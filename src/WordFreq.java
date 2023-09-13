@@ -80,8 +80,6 @@ public class WordFreq implements Comparator<WordFreq>{
 
     public static String forToString(String s, int chars){
         int i = 0; StringBuilder result = new StringBuilder();
-        if (s == null)
-            return result.append("      ").toString();
         while (++i <= chars - s.length())
             result.append(" ");
         return result.toString();

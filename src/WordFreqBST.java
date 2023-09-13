@@ -18,25 +18,6 @@ public class WordFreqBST implements WordCounter {
             this.wordFreqObj = new WordFreq(item);
         }
 
-        public boolean contains(Object ob) {
-            WordFreqTreeNode currentTreeNode = this;
-            while (this.parent != null) //find parent node
-                currentTreeNode = currentTreeNode.parent;
-            return containsRecursive(currentTreeNode, ob);
-        }
-
-        public boolean containsRecursive(WordFreqTreeNode current, Object ob){
-            if (current == null)
-                return false;
-            else if (ob instanceof WordFreq && current.wordFreqObj.compareToIgnoreCaseWithoutDiacritics((WordFreq) ob) == 0) { //intended for root words
-                return true;
-            }
-            boolean leftContains = containsRecursive(current.left, ob);
-            boolean rightContains = containsRecursive(current.right, ob);
-
-            return leftContains || rightContains;
-        }
-
         public WordFreq getWordFreqObj() {
             return wordFreqObj;
         }
