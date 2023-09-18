@@ -3,7 +3,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class WordFreqBST implements WordCounter {
@@ -83,8 +82,8 @@ public class WordFreqBST implements WordCounter {
 
     public static void main(String[] args) {
         WordFreqBST a = new WordFreqBST();
-        a.addStopWord("να", "και", "τι", "με", "το", "την", "του", "τον", "δεν", "που", "για", "τα",
-                        "η", "ο", "στο", "θα", "απ", "στην", "της", "σε", "αλλα", "από", "οι", "των", "τη", "τις", "of", "στον");
+        a.addStopWord("να", "και", "ειναι", "με", "το", "τα", "της", "την", "του", "τον", "δεν", "που",
+                        "η", "ο", "στο", "στην", "στον", "σε", "θα", "από", "οι", "των", "τη", "τις", "of");
         a.load("D:\\Projects\\domes-dedomenon-2021\\3rd-assignment\\text1.txt");
 
         traverseR5(head);
@@ -129,9 +128,13 @@ public class WordFreqBST implements WordCounter {
         while (true) {
             boolean equalsIgnorePostfix = false;
             if (!origin && nodeIter.getWordFreqObj().getType() != null && newWordNode.getWordFreqObj().getType() != null) {
-                if (WordFreq.rootWords.containsString(newRoot) && nodeIter.getWordFreqObj().getWord().startsWith(newRoot) //the root exist so we need to increase the frequency
-                        && nodeIter.getWordFreqObj().getRoot().equals(newRoot) && (nodeIter.getWordFreqObj().getType().equals(newWordNode.getWordFreqObj().getType()) || nodeIter.getWordFreqObj().getType().equals("both") || newWordNode.getWordFreqObj().getType().equals("both"))) {
-                    equalsIgnorePostfix = true;
+                String nodeIterRoot = nodeIter.getWordFreqObj().getRoot();
+                String IterSubstring = nodeIterRoot.substring(0, nodeIterRoot.length() -1);
+                String newRootSubstring = newRoot.substring(0, newRoot.length() -1);
+                if (WordFreq.rootWords.containsString(newRoot) && (nodeIter.getWordFreqObj().getWord().equals(string) || nodeIter.getWordFreqObj().getRoot().equals(newRoot)) //|| string.startsWith(nodeIterRoot) //the root exist, so we need to increase the frequency
+                    //|| (IterSubstring.equals(newRootSubstring) && nodeIterRoot.endsWith("α") || nodeIterRoot.endsWith("η") && Math.abs(nodeIter.getWordFreqObj().getWord().length() - string.length()) <= 5 )
+                    && nodeIter.getWordFreqObj().containsType(newWordNode.getWordFreqObj().getType())) { //nouns and adjectives are being mixed
+                        equalsIgnorePostfix = true;
                 }
             }
 

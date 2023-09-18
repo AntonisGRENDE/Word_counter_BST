@@ -1,19 +1,20 @@
 import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.Comparator;
 public class WordFreq implements Comparator<WordFreq>{
     private int frequency;
-    private String word, root, postfix, type;
-    private static final MyLinkedList <String> verbPostfix = new MyLinkedList<>("ζομαστε", "ζοταν", "αζεσαι", "αζεται", "ζεται", "αζομαι", "ομαστε", "ομασταν", "μαστε", "ομασταν" , "οσασταν", "ομουνα", "οσουνα", "ουσαμε", "ησαμε", "ησατε", "ησαν", "ησεις", "ησουμε", "αγαμε",
-                                                                                    "αξουμε", "αχνω", "αχνεται", "ασεις", "νουν", "ασουμε", "ουσε", "ουσες", "οτανε", "ουνταν","μασταν", "ομουν", "οσουν",  "σαστε", "τομαι", "ομαι", "εθηκες", "εθηκε", "εθηκαμε", "εθηκατε", "εθηκαν",
-                                                                                    "ζονται", "ονται",  "ωμαστε", "ωσαστε","μαστε", "σαστε", "αζεσαι", "αστηκε", "αστει", "στηκα", "στηκη", "ξουμε", "ξετε", "ξουν", "ισεις", "σισουν", "σουμε", "ηθουμε", "θουμε", "ουμαι", "ηκαμε",
-                                                                                    "ζουμε", "ιαιμαι", "εθηκα", "εσαι", "εται","οντε", "εσε","σαμε", "σατε", "χνω", "χνεις", "χνει",
+    private String word, root, postfix, type[];
+    private static final MyLinkedList <String> verbPostfix = new MyLinkedList<>("ζομαστε", "ζοταν", "ζεσαι", "ζεται", "ζεται", "ζομαι", "ομαστε", "ομασταν", "μαστε", "ομασταν" , "οσασταν", "ομουνα", "οσουνα", "ουσαμε", "σαμε", "σατε", "σαν", "σεις", "σουμε", "αγαμε",
+                                                                                    "ξουμε", "χνω", "χνεται", "σεις", "νουν", "ουσε", "ουσες", "οτανε", "ουνταν","μασταν", "ομουν", "οσουν",  "σαστε", "τομαι", "ομαι", "εθηκες", "εθηκε", "εθηκαμε", "εθηκατε", "εθηκαν",
+                                                                                    "ζονται", "ονται",  "ωμαστε", "ωσαστε","μαστε", "σαστε", "ζεσαι", "στηκε", "στει", "στηκα", "στηκη", "ξουμε", "ξετε", "ξουν", "ισεις", "σισουν", "σουμε", "ηθουμε", "θουμε", "ουμαι", "ηκαμε",
+                                                                                    "ζουμε", "ιαιμαι", "εθηκα", "εσαι", "εται","οντε", "εσε","σαμε", "σατε", "χνω", "χνεις", "χνει", "ζουν", "νουσαμε", "ναμε", "νας", "νησει", "ουσαν", "ηθηκα",
                                                                                     "χνουμε", "χναμε", "χνατε", "χνετε", "χνεται", "χνουν", "χναν", "στει", "στηκε", "οταν", "ιζουμε", "χτω", "χτηκα", "τομαι", "τομουν", "τει", "ψει", "ιζετε", "σετε",
-                                                                                    "νουμε", "νετε", "νουν", "νω", "νεις", "νει", "ναμε", "νατε", "ναν", "νουμε", "θεις", "ηθηκα", "ηθηκες", "ηθηκε", "ειται", "εμαι", "μαι", "σαι", "ναι", "ησει", "ασαν", "νανε", "αζαν",
-                                                                                    "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "σουν", "ουνε", "ηκε", "ηκα", "ουσα", "ουω", "αζετε", "αζουμε", "αζει", "αξει", "αζω", "αξω", "αζα", "ασω", "ασει", "ασα",
-                                                                                    "αξα", "ζων", "ζας", "ζης", "ασε", "εινει", "χτει", "ησω", "ναει", "εσε", "χνω", "ειτε", "ετε", "ουν",
-                                                                                    "στω", "ανε", "θουν", "ναω", "αει","ουμε", "αεις", "ξεις", "ζει", "ζουν", "θει", "είς", "αμε", "ατε", "αγα", "αμε", "αγε", "εσει", "ησα","ησε", "σαν", "ξα", "ξω", "ξει","εσω", "σω",
-                                                                                    "σει", "σεο", "σες", "σα", "σε", "ην", "αν", "αω", "αι", "ές", "θω", "εις", "ει", "νε", "ον",  "ζω", "ζα",  "σω", "νω", "με", "τω", "φω", "ψω", "ψα", "φε", "ψε", "ω");
-    private static final MyLinkedList <String> nounPostfix = new MyLinkedList<>("μενος", "μενο", "μενα", "μενοι", "μενη", "μενες", "οτητα", "οντας", "οτα", "στης", "ουλα", "ατα", "ατων", "ακι", "ωση", "ακια", "σος", "σεων", "σεις", "ηση", "ους", "ση", "ου", "ας", "οι", "τι", "ης", "ων", "ος", "ες", "s", "η", "ε", "ς", "ν", "ο", "α" );
+                                                                                    "νουμε", "νετε", "νουν", "νω", "νεις", "νει", "ναμε", "νατε", "ναν", "νουμε", "θεις", "κα", "κες", "κε", "ειται", "εμαι", "μαι", "σαι", "ναι", "νανε", "αζαν", "τσε", "ευω", "ευει", "θηκε",
+                                                                                    "αινω", "αινεις", "αινει", "αινουμε", "αινετε", "αινουν", "σουν", "ζουνε", "ηκε", "ηκα", "σα", "αξα", "ζων", "ζας", "ζης", "σε", "εινει", "χτει", "ναει", "εσε", "χνω", "ειτε", "ετε", "ουν", "νεται",
+                                                                                    "στω", "ανε", "θουν", "ναω","ουμε", "αεις", "ξεις", "ζει", "ουνε", "ζουν", "θει", "είς", "ατε", "γα", "με", "γε", "εσει", "ησα","ησε", "σαν", "ξα", "ξω", "ξει", "σω", "υω", "σω", "ζεις",
+                                                                                    "σει", "σεο", "σες", "σα", "σε", "αν", "αι", "ές", "θω", "εις", "ει", "νε", "ον",  "ζω", "ζα", "φα", "να", "σω", "νω", "με", "τω", "φω", "ψω", "ψα", "φε", "ψε", "ω");
+    private static final MyLinkedList <String> nounPostfix = new MyLinkedList<>("μενος", "μενο", "μενα", "μενοι", "μενη", "μενες", "οτητα", "οντας", "τσες", "οτα", "στης", "ουλα", "ατα", "ατων", "κων", "ακι", "ωση", "τσα", "ακια", "τσικα", "σος", "σεων", "σεις", "ους", "κος",
+                                                                                    "ην", "κο", "ση", "ου", "ας", "κη", "οι", "τι", "ης", "ων", "ος", "ες", "s", "η", "ε", "ς", "ν", "ο", "α" );
     public static MyLinkedList<String> rootWords = new MyLinkedList<>();
 
 
@@ -32,17 +33,26 @@ public class WordFreq implements Comparator<WordFreq>{
 
     /** The word is normalized before compared so that we don't need to include diacritics in our Postfix Sets.
      *  As a result all roots and postfixes are without diacritics */
-    public static boolean findRootAndPostfix(WordFreq wf) {
+    public static void findRootAndPostfix(WordFreq wf) {
         String NormalizedWord = Normalizer.normalize(wf.word, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", ""); //removes diacritics
-
         for (String p : verbPostfix) {
             if (NormalizedWord.endsWith(p) && (NormalizedWord.length() - p.length()) >= 1) { // second condition: is compound word (sintheti leksi)
                 String stringRoot = NormalizedWord.substring(0, NormalizedWord.length() - p.length());
                 if (stringRoot.length() >= 2) {
                     wf.root = stringRoot;
                     wf.postfix = p;
-                    wf.type = "verb";
-                    return true;
+                    if (NormalizedWord.endsWith("εις"))
+                        wf.type = "verb or noun or adverb".split(" or ");
+                    else if (NormalizedWord.endsWith("κα"))
+                        wf.type = "verb or noun".split(" or ");
+                    else if (NormalizedWord.endsWith("σα") && NormalizedWord.length() < 4)
+                        wf.type = "noun or adjective".split(" or ");
+                    else if (NormalizedWord.endsWith("κες")){
+                        wf.type = "verb or noun or adjective".split(" or ");
+                    }
+                    else
+                        wf.type = new String[]{"verb"};
+                    break;
                 }
             }
         }
@@ -51,14 +61,15 @@ public class WordFreq implements Comparator<WordFreq>{
             if (NormalizedWord.endsWith(p) && (NormalizedWord.length() - p.length()) >= 1) { // second condition: is compound word (sintheti leksi)
                 String stringRoot = NormalizedWord.substring(0, NormalizedWord.length() - p.length());
                 if (stringRoot.length() >= 2) {
-                    wf.root = stringRoot;
-                    wf.postfix = p;
-                    wf.type = "noun or adjective";
-                    return true;
+                    if (wf.postfix == null || p.length() > wf.postfix.length()) {
+                        wf.root = stringRoot;
+                        wf.postfix = p;
+                        wf.type = "noun or adjective".split(" or ");
+                        break;
+                    }
                 }
             }
         }
-        return false;
     }
 
     public String key() {return word;}
@@ -78,15 +89,30 @@ public class WordFreq implements Comparator<WordFreq>{
         return Integer.compare(o1.frequency, o2.frequency);
     }
 
+    public boolean containsType(String[] typeArr){
+        if (this.type == null || typeArr == null)
+            return false;
+        else {
+            for (String thisType : type)
+                for (String t : typeArr)
+                    if (thisType.equals(t))
+                        return true;
+        }
+        return false;
+    }
+
     public static String forToString(String s, int chars){
         int i = 0; StringBuilder result = new StringBuilder();
+        if (s == null)
+            s = "    ";
         while (++i <= chars - s.length())
             result.append(" ");
         return result.toString();
     }
 
+
     public String toString() {
-        return word + "  " + forToString(word,19) + root + " + " + postfix+  forToString(root + postfix,20) +"  Repetitions: " + frequency + " type: " + type;
+        return word + "  " + forToString(word,19) + root + " + " + postfix + forToString(root + postfix,20) + " type: " + Arrays.toString(type) + forToString(Arrays.toString(type),23) + "Repetitions: " + frequency ;
     }
 
     public void increaseFrequency(){ ++frequency; }
@@ -94,7 +120,7 @@ public class WordFreq implements Comparator<WordFreq>{
     public String getRoot() { return root; }
     public int getFrequency() { return frequency; }
     public String getPostfix() { return postfix; }
-    public String getType() { return type; }
+    public String[] getType() { return type; }
 
 }
 
