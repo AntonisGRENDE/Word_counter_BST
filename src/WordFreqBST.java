@@ -131,7 +131,7 @@ public class WordFreqBST implements WordCounter {
                 String nodeIterRoot = nodeIter.getWordFreqObj().getRoot();
                 String IterSubstring = nodeIterRoot.substring(0, nodeIterRoot.length() -1);
                 String newRootSubstring = newRoot.substring(0, newRoot.length() -1);
-                if (WordFreq.rootWords.containsString(newRoot) && (nodeIter.getWordFreqObj().getWord().equals(string) || nodeIter.getWordFreqObj().getRoot().equals(newRoot)) // the root exist, so we need to increase the frequency
+                if (WordFreq.rootWords.containsString(newRoot) && (nodeIter.getWordFreqObj().getWord().equals(string) || (nodeIter.getWordFreqObj().getRoot().equals(newRoot)) && string.length() > 3) // the root exist, so we need to increase the frequency
                         //|| (string.startsWith(nodeIterRoot) && Math.abs(nodeIter.getWordFreqObj().getWord().length() - string.length() ) <= 2 )
                      //|| ((IterSubstring.equals(newRootSubstring) && nodeIterRoot.endsWith("α") || nodeIterRoot.endsWith("η") || nodeIterRoot.endsWith("η") && Math.abs(nodeIter.getWordFreqObj().getWord().length() - string.length()) <= 5 ))
                         && nodeIter.getWordFreqObj().containsType(newWordNode.getWordFreqObj().getType())) { //nouns and adjectives are being mixed
