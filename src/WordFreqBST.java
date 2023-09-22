@@ -97,11 +97,11 @@ public class WordFreqBST implements WordCounter {
     public void load(String filename) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to count words ending with a different postfix but same root as different words? Answer with yes or no");
-        boolean sameOrigin = false; //scanner.nextLine().equals("yes"); //todo fix no response
+        boolean sameOrigin = scanner.nextLine().equals("yes");
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line, la[];
             while ((line = br.readLine()) != null) {
-                line = line.replaceAll("[^α-ωά-ώΑ-ΩΆ-Ώa-zA-Z\\s']", "").replace("\t", " ").toLowerCase();
+                line = line.replaceAll("[^α-ωά-ώΑ-ΩΆ-Ώa-zA-ZäöüÄÖÜß\\s']", "").replace("\t", " ").toLowerCase();
                 la = line.split(" ");
                 for (String s : la)
                     if (!(s.isBlank() || (s.startsWith("'") || s.endsWith("'"))) && !stopWords.contains(s))
@@ -128,12 +128,7 @@ public class WordFreqBST implements WordCounter {
         while (true) {
             boolean equalsIgnorePostfix = false;
             if (!origin && nodeIter.getWordFreqObj().getType() != null && newWordNode.getWordFreqObj().getType() != null) {
-                String nodeIterRoot = nodeIter.getWordFreqObj().getRoot();
-                String IterSubstring = nodeIterRoot.substring(0, nodeIterRoot.length() -1);
-                String newRootSubstring = newRoot.substring(0, newRoot.length() -1);
                 if (WordFreq.rootWords.containsString(newRoot) && (nodeIter.getWordFreqObj().getWord().equals(string) || (nodeIter.getWordFreqObj().getRoot().equals(newRoot)) && string.length() > 3) // the root exist, so we need to increase the frequency
-                        //|| (string.startsWith(nodeIterRoot) && Math.abs(nodeIter.getWordFreqObj().getWord().length() - string.length() ) <= 2 )
-                     //|| ((IterSubstring.equals(newRootSubstring) && nodeIterRoot.endsWith("α") || nodeIterRoot.endsWith("η") || nodeIterRoot.endsWith("η") && Math.abs(nodeIter.getWordFreqObj().getWord().length() - string.length()) <= 5 ))
                         && nodeIter.getWordFreqObj().containsType(newWordNode.getWordFreqObj().getType())) { //nouns and adjectives are being mixed
                             equalsIgnorePostfix = true;
                 }
@@ -143,7 +138,7 @@ public class WordFreqBST implements WordCounter {
                 nodeIter.getWordFreqObj().increaseFrequency();
                 ++totalWords;
                 // if (!nodeIter.getWordFreqObj().getWord().equals(string)) //todo next patch: check for wrong equivalents
-                    //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " +string);
+                    //System.out.println(nodeIter.getWordFreqObj().getWord() + "  " + string);
                 return ;
             } else {
                 WordFreqTreeNode childNode = (nodeIter.compareTo(newWordNode) < 0) ? nodeIter.getRight() : nodeIter.getLeft();
@@ -395,19 +390,15 @@ public class WordFreqBST implements WordCounter {
         return head.subtreeSize + 1;
     }
 
-    String searching;
+    /** returns 0 if it wasn't found
+     * WordFreqNode need head as an argument at the first call */
     @Override
-    public int getFrequency(String w) {
-        searching = w;
-        return traverseR2(head);
-    }
-
-    public int traverseR2(WordFreqTreeNode h) {
+    public int getFrequency(String w, WordFreqTreeNode h) {
         if (h == null)
-            return 0;  // not found
-        else if (h.getWordFreqObj().key().equals(searching))
+            return 0;
+        else if (h.getWordFreqObj().key().equals(w))
             return h.getWordFreqObj().getFrequency();
-        return traverseR2(h.getRight()) + traverseR2(h.getLeft());
+        return getFrequency(w, h.getRight()) + getFrequency(w, h.getLeft());
     }
 
 
