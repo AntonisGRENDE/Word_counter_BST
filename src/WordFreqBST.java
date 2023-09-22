@@ -129,8 +129,8 @@ public class WordFreqBST implements WordCounter {
         while (true) {
             boolean equalsIgnorePostfix = false;
             if (!origin && nodeIter.getWordFreqObj().getType() != null && newWordNode.getWordFreqObj().getType() != null) {
-                String IterRootSubstring, newRootSubstring;
                 boolean condition = false;
+//                String IterRootSubstring, newRootSubstring;
 //                try {
 //                    String nodeIterRoot = nodeIter.getWordFreqObj().getRoot();
 //                    IterRootSubstring = nodeIterRoot.substring(0, nodeIterRoot.length() - 2);
@@ -210,7 +210,7 @@ public class WordFreqBST implements WordCounter {
             if (current == null) return null;
             else if (current.compareTo(temp) == 0){
 
-                if (current.getWordFreqObj().getFrequency() > getMeanFrequency()) {
+                if (current.getWordFreqObj().getFrequency() > getMeanFrequency(head)) {
                     remove(current.getWordFreqObj().key());
                     rootInsert(current.getWordFreqObj());
                 }
@@ -383,15 +383,11 @@ public class WordFreqBST implements WordCounter {
 
 
     @Override
-    public int getTotalWords() {
-        return traverseR(head);
-    }   //todo change?
-
-    private int traverseR(WordFreqTreeNode h) {
+    public int getTotalWords(WordFreqTreeNode h) {
         if (h == null || stopWords.contains(h.getWordFreqObj().key()))
             return 0;
         return h.getWordFreqObj().getFrequency()
-                + traverseR(h.getLeft()) + traverseR(h.getRight());
+                + getTotalWords(h.getLeft()) + getTotalWords(h.getRight());
     }
 
 
@@ -425,20 +421,20 @@ public class WordFreqBST implements WordCounter {
         return TraverseR3(h.getRight()) + TraverseR3(h.getLeft());
     }
 
+    /**
+     * @param h the head needs to be passed at the first call
+     * @return
+     */
     @Override
-    public double getMeanFrequency() {
-        return TraverseR4(head);
-    }
-
-    double sum = 0.0;
-    double TraverseR4(WordFreqTreeNode h) {
+    public double getMeanFrequency(WordFreqTreeNode h) {
         if (h == null)
             return 0.0;
         sum += h.getWordFreqObj().getFrequency();
-        TraverseR4(h.getLeft()) ;
-        TraverseR4(h.getRight());
+        getMeanFrequency(h.getLeft()) ;
+        getMeanFrequency(h.getRight());
         return sum/getDistinctWords();
     }
+    double sum = 0.0;
 
     @Override
     public void removeStopWord(String w) {
@@ -446,24 +442,16 @@ public class WordFreqBST implements WordCounter {
             System.out.println("Stopword does not exist");
     }
 
-    public void printPreorder(){
-        preorder(head);
-        System.out.println();
-    }
-    public void preorder(WordFreqTreeNode n) {
+    public void printPreorder(WordFreqTreeNode n){
         if (n == null)
             return ;
         if(!stopWords.contains(n.getWordFreqObj().key()))
             System.out.println(n.getWordFreqObj().key() + " ");
-        preorder(n.getRight());
-        preorder(n.getLeft());
+        printPreorder(n.getRight());
+        printPreorder(n.getLeft());
     }
 
-    public static MyLinkedList<String> getStopWords() {
-        return stopWords;
-    }
-    public static MyLinkedList<WordFreq> getWordFreqList() {
-        return wordFreqMyLinkedList;
-    }
+    public static MyLinkedList<String> getStopWords() { return stopWords;  }
+    public static MyLinkedList<WordFreq> getWordFreqList() { return wordFreqMyLinkedList; }
     public static int getTotalWordsWritten() { return totalWords; }
 }
