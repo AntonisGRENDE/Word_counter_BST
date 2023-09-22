@@ -7,7 +7,7 @@ public interface WordCounter {
     void load(String filename);
     int getTotalWords();
     int getDistinctWords();
-    int getFrequency(String w);
+    int getFrequency(String w, WordFreqBST.WordFreqTreeNode h);
     WordFreq getMaximumFrequency();
     double getMeanFrequency();
     void addStopWord(String... w);
