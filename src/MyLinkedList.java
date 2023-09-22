@@ -81,21 +81,6 @@ public class MyLinkedList<T> implements Iterable<T>{
         return str.compareToIgnoreCase(normalizedWord2);
     }
 
-    @Override
-    public boolean equals(Object ob) {
-        ListNode<T> current = head;
-
-        while (current != null) {
-            if (ob.equals(current.getData()))
-                return true;
-            else if (ob instanceof String && current.getData() instanceof String && current.getData().equals(ob)){
-                return true;
-            }
-            current = current.getNext();
-        }
-        return false;
-    }
-
     /**
      * @return 0 if the element was found and removed, -1 if the element was not found
      * @throws EmptyStackException if the list is empty
@@ -113,7 +98,7 @@ public class MyLinkedList<T> implements Iterable<T>{
                     prev.setNext(iterator.getNext());
                 }
 
-                if (iterator.getNext() ==null) {
+                if (iterator.getNext() == null) {
                     tail = prev;
                 }
                 --size;
