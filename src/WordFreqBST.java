@@ -97,8 +97,8 @@ public class WordFreqBST implements WordCounter {
     @Override
     public void load(String filename) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to count words ending with a different postfix but same root as different words? Answer with yes or no");
-        boolean sameOrigin = scanner.nextLine().equals("yes");
+        System.out.println("Do you want to count words ending with a different postfix, same root and the same grammatical type as different words? Answer with yes or no");
+        boolean sameRootAndType = scanner.nextLine().equals("yes");
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line, la[];
             while ((line = br.readLine()) != null) {
@@ -106,7 +106,7 @@ public class WordFreqBST implements WordCounter {
                 la = line.split(" ");
                 for (String s : la)
                     if (!(s.isBlank() || (s.startsWith("'") || s.endsWith("'"))) && !stopWords.contains(s))
-                        insert(s,sameOrigin);
+                        insert(s,sameRootAndType);
             }
         } catch (IOException ex) {
             System.out.println("file name is: " + filename); ex.printStackTrace();
@@ -127,26 +127,19 @@ public class WordFreqBST implements WordCounter {
 
         WordFreqTreeNode nodeIter = head;
         while (true) {
-            boolean equalsIgnorePostfix = false;
-            if (!origin && nodeIter.getWordFreqObj().getType() != null && newWordNode.getWordFreqObj().getType() != null) {
-                boolean condition = false;
-//                String IterRootSubstring, newRootSubstring;
-//                if (newRoot != null && newRoot.length() >= 6) {
-//                    try {
-//                        String nodeIterRoot = nodeIter.getWordFreqObj().getRoot();
-//                        IterRootSubstring = nodeIterRoot.substring(0, nodeIterRoot.length() - 2);
-//                        newRootSubstring = newRoot.substring(0, newRoot.length() - 2);
-//                        condition = IterRootSubstring.equals(newRootSubstring) && Math.abs(nodeIter.getWordFreqObj().getRoot().length() - newRoot.length()) <= 2 && nodeIter.getWordFreqObj().getRoot().length() > 3 && Math.abs(newWordNode.getWordFreqObj().getPostfix().length() - nodeIter.getWordFreqObj().getPostfix().length()) <= 3 ;
-//                        //System.out.println(" IterRootSubstring equals newRootSubstring?   " + nodeIter.getWordFreqObj().getWord() + " " + string + " condition is: " + condition);
-//                    } catch (RuntimeException e) {}
-//                }
-                if (WordFreq.rootWords.containsString(newRoot) && (nodeIter.getWordFreqObj().getWord().equals(string) || (Objects.equals(nodeIter.getWordFreqObj().getRoot(), newRoot) && string.length() > 3) || condition )
-                        && nodeIter.getWordFreqObj().containsType(newWordNode.getWordFreqObj().getType())) { //nouns and adjectives are being mixed
-                            equalsIgnorePostfix = true;  // the root exist, so we need to increase the frequency
-                }
-            }
+            boolean condition = false;
+//            String IterRootSubstring, newRootSubstring;
+//            if (newRoot != null && newRoot.length() >= 6) {
+//                try {
+//                    String nodeIterRoot = nodeIter.getWordFreqObj().getRoot();
+//                    IterRootSubstring = nodeIterRoot.substring(0, nodeIterRoot.length() - 2);
+//                    newRootSubstring = newRoot.substring(0, newRoot.length() - 2);
+//                    condition = IterRootSubstring.equals(newRootSubstring) && Math.abs(nodeIter.getWordFreqObj().getRoot().length() - newRoot.length()) <= 2 && nodeIter.getWordFreqObj().getRoot().length() > 3 && Math.abs(newWordNode.getWordFreqObj().getPostfix().length() - nodeIter.getWordFreqObj().getPostfix().length()) <= 3 ;
+//                    //System.out.println(" IterRootSubstring equals newRootSubstring?   " + nodeIter.getWordFreqObj().getWord() + " " + string + " condition is: " + condition);
+//                } catch (RuntimeException e) {}
 
-            if (nodeIter.compareTo(newWordNode) == 0 || equalsIgnorePostfix) {
+            if (nodeIter.compareTo(newWordNode) == 0 || (!origin && WordFreq.rootWords.containsString(newRoot) && nodeIter.getWordFreqObj().containsType(newWordNode.getWordFreqObj().getType())
+                    && (Objects.equals(nodeIter.getWordFreqObj().getRoot(), newRoot) && string.length() > 3) || condition )) {
                 nodeIter.getWordFreqObj().increaseFrequency();
                 ++totalWords;
                 // if (!nodeIter.getWordFreqObj().getWord().equals(string))
